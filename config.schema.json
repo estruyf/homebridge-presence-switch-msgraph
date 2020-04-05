@@ -1,0 +1,125 @@
+{
+  "pluginAlias": "presence-switch",
+  "pluginType": "accessory",
+  "singular": false,
+  "headerDisplay": "Microsoft Graph Presence Switch",
+  "footerDisplay": "Plugin which allows you retrieve your presence via the Microsoft Graph and call your busy light API.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Presence Indicator",
+        "required": true
+      },
+      "appId": {
+        "title": "Azure AD application ID",
+        "description": "The GUID of the Azure AD app.",
+        "type": "string",
+        "required": true
+      },
+      "interval": {
+        "title": "Interval",
+        "description": "Polling interval.",
+        "type": "integer",
+        "default": 1
+      },
+      "setColorApi": {
+        "title": "Set color API",
+        "description": "API to set the color",
+        "type": "string",
+        "required": true
+      },
+      "offApi": {
+        "title": "Off API",
+        "description": "API to turn off your device",
+        "type": "string",
+        "required": true
+      },
+      "onApi": {
+        "title": "On API",
+        "description": "API to turn on your device",
+        "type": "string",
+        "required": true
+      },
+      "startTime": {
+        "title": "Start time",
+        "description": "Define the time when you start your working day (ex: 8:30).",
+        "type": "string",
+        "default": ""
+      },
+      "endTime": {
+        "title": "End time",
+        "description": "Define the time when you end your working day (ex: 18:00).",
+        "type": "string",
+        "default": ""
+      },
+      "weekend": {
+        "title": "Weekend checks",
+        "description": "Do you want to check in the weekends",
+        "type": "boolean",
+        "default": false
+      },
+      "statusColors": {
+        "title": "Status color",
+        "description": "Define the color values for the following states: 'available', 'busy', and 'away'.",
+        "type": "object",
+        "properties": {
+          "available": { 
+            "type": "object",
+            "properties": {
+              "red": "string",
+              "green": "string",
+              "blue": "string"
+            }
+          },
+          "busy": { 
+            "type": "object",
+            "properties": {
+              "red": "string",
+              "green": "string",
+              "blue": "string"
+            } 
+          },
+          "away": { 
+            "type": "object" ,
+            "properties": {
+              "red": "string",
+              "green": "string",
+              "blue": "string"
+            }
+          }
+        }
+      },
+      "lightType": {
+        "title": "Light type",
+        "description": "Define the type of light you want to show.",
+        "type": "string",
+        "default": "switch",
+        "oneOf": [
+          {
+            "title": "Always on",
+            "enum": [ "on" ]
+          },
+          {
+            "title": "Blink",
+            "enum": [ "blink" ]
+          },
+          {
+            "title": "Hearthbeat",
+            "enum": [ "hearthbeat" ]
+          }
+        ]
+      },
+      "debug": {
+        "title": "Debug",
+        "type": "boolean",
+        "default": false,
+        "required": false
+      }
+    }
+  },
+  "form": null,
+  "display": null
+}

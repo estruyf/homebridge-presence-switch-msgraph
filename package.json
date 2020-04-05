@@ -1,0 +1,38 @@
+{
+  "name": "homebridge-presence-switch-msgraph",
+  "version": "0.0.1",
+  "description": "Switch for Microsoft Graph presence status",
+  "license": "MIT",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "author": "Elio Struyf",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepublish": "tsc",
+    "start": "tsc",
+    "publish:next": "npm publish --tag next"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {},
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "dependencies": {
+    "adal-node": "0.2.1",
+    "homebridge-lib": "4.5.6",
+    "node-fetch": "2.6.0",
+    "node-persist": "3.0.5"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "2.5.5",
+    "@types/node-persist": "3.0.0",
+    "hap-nodejs": "0.4.51",
+    "homebridge": "0.4.53",
+    "typescript": "3.8.3"
+  }
+}
