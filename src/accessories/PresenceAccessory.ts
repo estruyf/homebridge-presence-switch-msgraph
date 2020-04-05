@@ -107,7 +107,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
     });
 
     this.auth = new Auth(this.config.appId, this.storage);
-    this.auth.ensureAccessToken(MSGRAPH_URL, this.log, true).then(async (accessToken) => {
+    this.auth.ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug).then(async (accessToken) => {
       await BusyLightService.get(this.config.onApi, this.log, this.config.debug);
 
       if (accessToken) {
