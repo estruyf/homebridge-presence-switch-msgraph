@@ -161,7 +161,7 @@ export class Auth {
    * @param log
    * @param debug
    */
-  private ensureAccessTokenWithRefreshToken(resource: string, log: Logger, debug: boolean): Promise<TokenResponse> {
+  private ensureAccessTokenWithRefreshToken = (resource: string, log: Logger, debug: boolean): Promise<TokenResponse> => {
     return new Promise<TokenResponse>((resolve: (tokenResponse: TokenResponse) => void, reject: (error: any) => void): void => {
       if (debug) {
         log.info(`Retrieving new access token using existing refresh token ${this.service.refreshToken}`);
