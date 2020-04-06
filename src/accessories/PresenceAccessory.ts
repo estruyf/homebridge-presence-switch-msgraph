@@ -183,9 +183,13 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
     const startTimeSplit = splitHours(this.config.startTime);
     const endTimeSplit = splitHours(this.config.endTime);
+    if (this.config.debug) {
+      this.log.info(`startTimeSplit: ${JSON.stringify(startTimeSplit)}.`);
+      this.log.info(`endTimeSplit: ${JSON.stringify(endTimeSplit)}.`);
+    }
     const crntDate = new Date();
 
-    if(!this.config.weekend && (crntDate.getDay() == 6 || crntDate.getDay() == 0)) {
+    if(!this.config.weekend && (crntDate.getDay() === 6 || crntDate.getDay() === 0)) {
       if (this.config.debug) {
         this.log.info(`It's weekend, accessory will not set the busy light.`);
       }
@@ -193,13 +197,22 @@ export class PresenceAccessory implements HomebridgeAccessory {
     }
 
     if (startTimeSplit && (crntDate.getHours() < startTimeSplit.hour || crntDate.getHours() === startTimeSplit.hour && crntDate.getMinutes() < startTimeSplit.minutes)) {
+      if (this.config.debug) {
+        this.log.info(`Presence doesn't need to be checked, before working hours.`);
+      }
       return false;
     }
 
     if (endTimeSplit && (crntDate.getHours() > endTimeSplit.hour || crntDate.getHours() === endTimeSplit.hour && crntDate.getMinutes() > endTimeSplit.minutes)) {
+      if (this.config.debug) {
+        this.log.info(`Presence doesn't need to be checked, after working hours.`);
+      }
       return false;
     }
 
+    if (this.config.debug) {
+      this.log.info(`Presence can be retrieved`);
+    }
     return true;
   }
 }
