@@ -1,5 +1,9 @@
 # Changelog
 
+[7/04/2020] 1.0.4
+
+- Added access token logging
+
 [6/04/2020] 1.0.3
 
 - Added extra debug logging
