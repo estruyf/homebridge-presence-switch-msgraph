@@ -111,6 +111,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
       await BusyLightService.get(this.config.onApi, this.log, this.config.debug);
 
       if (accessToken) {
+        this.log.info(`Access token acquired.`);
         this.presencePolling();
       }
     });
