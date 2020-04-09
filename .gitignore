@@ -1,5 +1,6 @@
 node_modules/
 dist
 debug
+lib
 
 .DS_Store

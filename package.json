@@ -1,6 +1,6 @@
 {
   "name": "homebridge-presence-switch-msgraph",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Switch for Microsoft Graph presence status",
   "license": "MIT",
   "keywords": [
@@ -9,13 +9,14 @@
   "author": "Elio Struyf",
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "tsc",
+    "prepublish": "npm run build",
     "start": "tsc",
+    "build": "tsc",
     "publish:next": "npm publish --tag next"
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/estruyf/homebridge-presence-switch-msgraph"
   },
   "bugs": {},
   "engines": {

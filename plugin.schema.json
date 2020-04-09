@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "required": [
+    "name",
+    "accessory",
+    "appId",
+    "setColorApi",
+    "offApi",
+    "onApi"
+  ],
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string",
+      "default": "Presence Indicator"
+    },
+    "appId": {
+      "title": "Azure AD application ID",
+      "description": "The GUID of the Azure AD app.",
+      "type": "string",
+      "default": ""
+    },
+    "interval": {
+      "title": "Interval",
+      "description": "Polling interval.",
+      "type": "integer",
+      "default": 1
+    },
+    "setColorApi": {
+      "title": "Set color API",
+      "description": "API to set the color",
+      "type": "string"
+    },
+    "offApi": {
+      "title": "Off API",
+      "description": "API to turn off your device",
+      "type": "string"
+    },
+    "onApi": {
+      "title": "On API",
+      "description": "API to turn on your device",
+      "type": "string"
+    },
+    "startTime": {
+      "title": "Start time",
+      "description": "Define the time when you start your working day (ex: 8:30).",
+      "type": "string",
+      "default": ""
+    },
+    "endTime": {
+      "title": "End time",
+      "description": "Define the time when you end your working day (ex: 18:00).",
+      "type": "string",
+      "default": ""
+    },
+    "weekend": {
+      "title": "Weekend checks",
+      "description": "Do you want to check in the weekends",
+      "type": "boolean",
+      "default": false
+    },
+    "statusColors": {
+      "title": "Status color",
+      "description": "Define the color values for the following states: 'available', 'busy', and 'away'.",
+      "type": "object",
+      "default": {},
+      "properties": {
+        "available": {
+          "type": "object",
+          "title": "The Available Schema",
+          "description": "An explanation about the purpose of this instance.",
+          "default": {},
+          "required": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "properties": {
+            "red": {
+              "type": "integer",
+              "title": "The Red Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "green": {
+              "type": "integer",
+              "title": "The Green Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "blue": {
+              "type": "integer",
+              "title": "The Blue Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            }
+          }
+        },
+        "away": {
+          "type": "object",
+          "title": "The Away Schema",
+          "description": "An explanation about the purpose of this instance.",
+          "default": {},
+          "required": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "properties": {
+            "red": {
+              "type": "integer",
+              "title": "The Red Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "green": {
+              "type": "integer",
+              "title": "The Green Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "blue": {
+              "type": "integer",
+              "title": "The Blue Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            }
+          }
+        },
+        "busy": {
+          "type": "object",
+          "title": "The Busy Schema",
+          "description": "An explanation about the purpose of this instance.",
+          "default": {},
+          "required": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "properties": {
+            "red": {
+              "type": "integer",
+              "title": "The Red Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "green": {
+              "type": "integer",
+              "title": "The Green Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "blue": {
+              "type": "integer",
+              "title": "The Blue Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            }
+          }
+        }
+      }
+    },
+    "lightType": {
+      "title": "Light type",
+      "description": "Define the type of light you want to show.",
+      "type": "string",
+      "default": "switch",
+      "oneOf": [
+        {
+          "title": "default",
+          "enum": [ "" ]
+        },
+        {
+          "title": "Always on",
+          "enum": [ "on" ]
+        },
+        {
+          "title": "Blink",
+          "enum": [ "blink" ]
+        },
+        {
+          "title": "Hearthbeat",
+          "enum": [ "hearthbeat" ]
+        }
+      ]
+    },
+    "debug": {
+      "title": "Debug",
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

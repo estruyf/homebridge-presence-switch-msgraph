@@ -1,7 +1,12 @@
 node_modules
 src
 scripts
+dist
+debug
 
 .DS_Store
 .gitignore
 tsconfig.json
+.editorconfig
+homebridge.schema.json
+plugin.schema.json
