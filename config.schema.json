@@ -10,7 +10,6 @@
     "type": "object",
     "required": [
       "name",
-      "accessory",
       "appId",
       "setColorApi",
       "offApi",
@@ -75,8 +74,8 @@
         "properties": {
           "available": {
             "type": "object",
-            "title": "The Available Schema",
-            "description": "An explanation about the purpose of this instance.",
+            "title": "Available",
+            "description": "The color for when you are available.",
             "default": {},
             "required": [
               "red",
@@ -87,27 +86,27 @@
               "red": {
                 "type": "integer",
                 "title": "Red",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               },
               "green": {
                 "type": "integer",
                 "title": "Green",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               },
               "blue": {
                 "type": "integer",
                 "title": "Blue",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               }
             }
           },
           "away": {
             "type": "object",
-            "title": "The Away Schema",
-            "description": "An explanation about the purpose of this instance.",
+            "title": "Away",
+            "description": "The color for when you are away.",
             "default": {},
             "required": [
               "red",
@@ -118,19 +117,19 @@
               "red": {
                 "type": "integer",
                 "title": "Red",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               },
               "green": {
                 "type": "integer",
                 "title": "Green",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               },
               "blue": {
                 "type": "integer",
                 "title": "Blue",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               }
             }
@@ -138,7 +137,7 @@
           "busy": {
             "type": "object",
             "title": "The Busy Schema",
-            "description": "An explanation about the purpose of this instance.",
+            "description": "The color for when you are busy.",
             "default": {},
             "required": [
               "red",
@@ -149,19 +148,19 @@
               "red": {
                 "type": "integer",
                 "title": "Red",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               },
               "green": {
                 "type": "integer",
                 "title": "Green",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               },
               "blue": {
                 "type": "integer",
                 "title": "Blue",
-                "description": "An explanation about the purpose of this instance.",
+                "description": "Value between: 0 - 255.",
                 "default": 0
               }
             }
