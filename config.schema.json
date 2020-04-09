@@ -136,7 +136,7 @@
           },
           "busy": {
             "type": "object",
-            "title": "The Busy Schema",
+            "title": "Busy",
             "description": "The color for when you are busy.",
             "default": {},
             "required": [
