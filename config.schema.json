@@ -1,23 +1,32 @@
 {
+  "$schema": "https://gist.githubusercontent.com/estruyf/d5696a00569fa67d14e83a965873e51c/raw/a3cfafa01d6d24bf89316ef372ba28ecd44e75ba/homebridge.schema.json",
   "pluginAlias": "presence-switch",
   "pluginType": "accessory",
   "singular": false,
   "headerDisplay": "Microsoft Graph Presence Switch",
   "footerDisplay": "Plugin which allows you retrieve your presence via the Microsoft Graph and call your busy light API.",
   "schema": {
+    "$schema": "http://json-schema.org/draft-07/schema",
     "type": "object",
+    "required": [
+      "name",
+      "accessory",
+      "appId",
+      "setColorApi",
+      "offApi",
+      "onApi"
+    ],
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "Presence Indicator",
-        "required": true
+        "default": "Presence Indicator"
       },
       "appId": {
         "title": "Azure AD application ID",
         "description": "The GUID of the Azure AD app.",
         "type": "string",
-        "required": true
+        "default": ""
       },
       "interval": {
         "title": "Interval",
@@ -28,20 +37,17 @@
       "setColorApi": {
         "title": "Set color API",
         "description": "API to set the color",
-        "type": "string",
-        "required": true
+        "type": "string"
       },
       "offApi": {
         "title": "Off API",
         "description": "API to turn off your device",
-        "type": "string",
-        "required": true
+        "type": "string"
       },
       "onApi": {
         "title": "On API",
         "description": "API to turn on your device",
-        "type": "string",
-        "required": true
+        "type": "string"
       },
       "startTime": {
         "title": "Start time",
@@ -65,29 +71,99 @@
         "title": "Status color",
         "description": "Define the color values for the following states: 'available', 'busy', and 'away'.",
         "type": "object",
+        "default": {},
         "properties": {
-          "available": { 
+          "available": {
             "type": "object",
+            "title": "The Available Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "required": [
+              "red",
+              "green",
+              "blue"
+            ],
             "properties": {
-              "red": "string",
-              "green": "string",
-              "blue": "string"
+              "red": {
+                "type": "integer",
+                "title": "Red",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              },
+              "green": {
+                "type": "integer",
+                "title": "Green",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              },
+              "blue": {
+                "type": "integer",
+                "title": "Blue",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              }
             }
           },
-          "busy": { 
+          "away": {
             "type": "object",
+            "title": "The Away Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "required": [
+              "red",
+              "green",
+              "blue"
+            ],
             "properties": {
-              "red": "string",
-              "green": "string",
-              "blue": "string"
-            } 
+              "red": {
+                "type": "integer",
+                "title": "Red",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              },
+              "green": {
+                "type": "integer",
+                "title": "Green",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              },
+              "blue": {
+                "type": "integer",
+                "title": "Blue",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              }
+            }
           },
-          "away": { 
-            "type": "object" ,
+          "busy": {
+            "type": "object",
+            "title": "The Busy Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "required": [
+              "red",
+              "green",
+              "blue"
+            ],
             "properties": {
-              "red": "string",
-              "green": "string",
-              "blue": "string"
+              "red": {
+                "type": "integer",
+                "title": "Red",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              },
+              "green": {
+                "type": "integer",
+                "title": "Green",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              },
+              "blue": {
+                "type": "integer",
+                "title": "Blue",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0
+              }
             }
           }
         }
@@ -98,6 +174,10 @@
         "type": "string",
         "default": "switch",
         "oneOf": [
+          {
+            "title": "default",
+            "enum": [ "" ]
+          },
           {
             "title": "Always on",
             "enum": [ "on" ]
@@ -115,8 +195,7 @@
       "debug": {
         "title": "Debug",
         "type": "boolean",
-        "default": false,
-        "required": false
+        "default": false
       }
     }
   },

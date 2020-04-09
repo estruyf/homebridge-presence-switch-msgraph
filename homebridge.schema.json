@@ -1,0 +1,149 @@
+{
+  "type": "object",
+  "minProperties": 0,
+  "title": "The Root Schema",
+  "description": "The root schema comprises the entire JSON document.",
+  "additionalProperties": true,
+  "required": [
+    "pluginAlias",
+    "pluginType",
+    "singular",
+    "headerDisplay",
+    "footerDisplay",
+    "schema",
+    "form",
+    "display"
+  ],
+  "properties": {
+    "pluginAlias": {
+      "type": "string",
+      "minLength": 0,
+      "title": "pluginAlias",
+      "description": "The plugin identifier."
+    },
+    "pluginType": {
+      "type": "string",
+      "minLength": 0,
+      "title": "pluginType",
+      "description": "The type of plugin, valid values are 'platform' or 'accessory'.",
+      "enum": ["accessory", "platform"]
+    },
+    "singular": {
+      "type": "boolean",
+      "title": "Singular",
+      "description": "If set to 'true' the UI will not allow the user to add more than one config block. This is usually used for platform plugins where only a single config block should be present."
+    },
+    "headerDisplay": {
+      "type": "string",
+      "minLength": 0,
+      "title": "headerDisplay",
+      "description": "Plugin authors can display additional content in the user interface above and below the config form using the 'headerDisplay' and 'footerDisplay' attributes",
+      "default": ""
+    },
+    "footerDisplay": {
+      "type": "string",
+      "minLength": 0,
+      "title": "footerDisplay",
+      "description": "Plugin authors can display additional content in the user interface above and below the config form using the 'headerDisplay' and 'footerDisplay' attributes",
+      "default": ""
+    },
+    "schema": {
+      "type": "object",
+      "minProperties": 0,
+      "title": "schema",
+      "description": "Defined the config properties you need in order to make your plugin work.",
+      "default": {},
+      "additionalProperties": true,
+      "required": [
+        "type",
+        "properties"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 0,
+          "title": "type",
+          "description": "Type of properties added.",
+          "default": "object"
+        },
+        "properties": {
+          "type": "object",
+          "minProperties": 0,
+          "title": "The Properties Schema",
+          "description": "An explanation about the purpose of this instance.",
+          "default": {},
+          "additionalProperties": true,
+          "required": [
+            "name"
+          ],
+          "patternProperties": {
+            "^[A-Za-z0-9\\._%\\+-]+@[A-Za-z0-9\\.-]+\\.[A-Za-z]{2,6}$": {
+              "type": [
+                "object",
+                "array",
+                "boolean",
+                "string",
+                "number"
+              ],
+              "minProperties": 0,
+              "title": "The Name Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": {},
+              "additionalProperties": true,
+              "required": [
+                "title",
+                "type",
+                "default",
+                "required"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 0,
+                  "title": "The Title Schema",
+                  "description": "An explanation about the purpose of this instance.",
+                  "default": ""
+                },
+                "type": {
+                  "type": [
+                    "object",
+                    "array",
+                    "boolean",
+                    "string",
+                    "number"
+                  ],
+                  "title": "The Type Schema",
+                  "description": "An explanation about the purpose of this instance.",
+                  "default": {}
+                },
+                "default": {
+                  "type": "string",
+                  "minLength": 0,
+                  "title": "The Default Schema",
+                  "description": "An explanation about the purpose of this instance.",
+                  "default": ""
+                },
+                "required": {
+                  "type": "boolean",
+                  "title": "The Required Schema",
+                  "description": "An explanation about the purpose of this instance.",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "form": {
+      "title": "form",
+      "description": "Option attributes to further customise the interface of the plugin.",
+      "default": null
+    },
+    "display": {
+      "title": "display",
+      "description": "Option attributes to further customise the interface of the plugin.",
+      "default": null
+    }
+  }
+}

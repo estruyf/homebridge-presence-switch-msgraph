@@ -5,3 +5,5 @@ scripts
 .DS_Store
 .gitignore
 tsconfig.json
+.editorconfig
+homebridge.schema.json

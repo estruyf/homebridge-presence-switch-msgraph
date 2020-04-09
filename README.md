@@ -22,3 +22,7 @@ homebridge -D -I -U ~/nodejs/homebridge/homebridge-presence-switch-msgraph/debug
 - Light settings
   - type: none, blink, ...
   - brightness: 0.4 - 1
+
+## Useful links
+
+- [https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI)
