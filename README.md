@@ -1,6 +1,6 @@
 # Presence switch connected to Microsoft Graph
 
-*To be added*
+More information for now can be found here: [https://www.eliostruyf.com/diy-building-busy-light-show-microsoft-teams-presence/](https://www.eliostruyf.com/diy-building-busy-light-show-microsoft-teams-presence/).
 
 ## Local development
 
@@ -13,15 +13,41 @@ homebridge -D -I -U ~/nodejs/homebridge/homebridge-presence-switch-msgraph/debug
 
 ## Config
 
-- AppId
-- API URL to call
-- Light states
-  - Available
-  - Away
-  - Bussy
-- Light settings
-  - type: none, blink, ...
-  - brightness: 0.4 - 1
+The `accessory` config could look like this:
+
+```json
+{
+  "accessory": "presence-switch",
+  "name": "Presence Indicator",
+  "appId": "66204339-daf1-40fa-aa31-57342272edce",
+  "interval": 1,
+  "setColorApi": "http://127.0.0.1:5000/api/switch",
+  "offApi": "http://127.0.0.1:5000/api/off",
+  "onApi": "http://127.0.0.1:5000/api/on",
+  "startTime": "8:30",
+  "endTime": "18:00",
+  "weekend": false,
+  "statusColors": {
+    "available": {
+      "red": 0,
+      "green": 144,
+      "blue": 0
+    },
+    "away": {
+      "red": 255,
+      "green": 191,
+      "blue": 0
+    },
+    "busy": {
+      "red": 179,
+      "green": 0,
+      "blue": 0
+    }
+  },
+  "lightType": "",
+  "debug": true
+}
+```
 
 ## Useful links
 

@@ -1,6 +1,7 @@
 node_modules
 src
 scripts
+dist
 
 .DS_Store
 .gitignore
