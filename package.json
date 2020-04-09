@@ -7,7 +7,7 @@
     "homebridge-plugin"
   ],
   "author": "Elio Struyf",
-  "main": "lib/main.bundle.js",
+  "main": "dist/index.js",
   "scripts": {
     "prepublish": "npm run build",
     "start": "tsc",
