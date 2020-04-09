@@ -1,5 +1,9 @@
 # Changelog
 
+[9/04/2020] 1.1.0
+
+- Config schema changed to support forms
+
 [7/04/2020] 1.0.4
 
 - Added access token logging
