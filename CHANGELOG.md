@@ -1,6 +1,6 @@
 # Changelog
 
-[14/04/2020] 1.1.0
+[14/04/2020] 1.2.0
 
 - Moved the start-up for the device flow to when the button gets activated
 
