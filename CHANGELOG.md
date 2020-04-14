@@ -1,5 +1,9 @@
 # Changelog
 
+[14/04/2020] 1.1.0
+
+- Moved the start-up for the device flow to when the button gets activated
+
 [9/04/2020] 1.1.0
 
 - Config schema changed to support forms
