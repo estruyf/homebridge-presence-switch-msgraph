@@ -18,6 +18,8 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private storage: typeof persist;
   private auth: Auth = null;
 
+  private timeoutIdx: NodeJS.Timeout = null;
+
   private readonly defaultColors: StatusColors = {
     available: {
       red: 0,
@@ -76,7 +78,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
     // Register new switch
     this.accessoryService = new PresenceAccessory.service.Switch(this.config.name, null);
-    this.accessoryService.getCharacteristic(Characteristic.On).updateValue(false);
+    this.accessoryService.getCharacteristic(Characteristic.On).updateValue(false).on("set", this.setStatus);
 
     // Initialize the accessory
     this.init();
@@ -105,16 +107,32 @@ export class PresenceAccessory implements HomebridgeAccessory {
       dir: storePath,
       forgiveParseErrors: true
     });
+  }
 
-    this.auth = new Auth(this.config.appId, this.storage);
-    this.auth.ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug).then(async (accessToken) => {
-      await BusyLightService.get(this.config.onApi, this.log, this.config.debug);
+  /**
+   * Set status event listener
+   */
+  private setStatus = (on: boolean, callback: () => void) => {
+    if (on) {
+      // Turned on
+      this.auth = new Auth(this.config.appId, this.storage);
+      this.auth.ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug).then(async (accessToken) => {
+        await BusyLightService.get(this.config.onApi, this.log, this.config.debug);
 
-      if (accessToken) {
-        this.log.info(`Access token acquired.`);
-        this.presencePolling();
+        if (accessToken) {
+          this.log.info(`Access token acquired.`);
+          this.presencePolling();
+        }
+      });
+    } else  {
+      // Turned off
+      if (this.timeoutIdx) {
+        clearTimeout(this.timeoutIdx);
+        this.timeoutIdx = null;
       }
-    });
+    }
+
+    callback();
   }
 
   /**
@@ -140,7 +158,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
       }
     }
 
-    setTimeout(() => {
+    this.timeoutIdx = setTimeout(() => {
       this.presencePolling();
     }, (this.config.interval >= 1 ? this.config.interval : 1) * 60 * 1000);
   }
