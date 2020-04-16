@@ -1,5 +1,9 @@
 # Changelog
 
+## [14/04/2020] 1.2.1
+
+- Remove the `hap-nodejs` dependency
+
 ## [14/04/2020] 1.2.0
 
 - Moved the start-up for the device flow to when the button gets activated

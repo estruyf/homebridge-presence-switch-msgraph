@@ -3,7 +3,6 @@ import 'hap-nodejs';
 import persist from 'node-persist';
 import { Auth, splitHours } from '../helpers';
 import { MsGraphService, BusyLightService } from '../services';
-import { Characteristic } from 'hap-nodejs';
 
 const MSGRAPH_URL = `https://graph.microsoft.com`;
 const MSGRAPH_PRESENCE_PATH = `beta/me/presence`;
@@ -78,7 +77,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
     // Register new switch
     this.accessoryService = new PresenceAccessory.service.Switch(this.config.name, null);
-    this.accessoryService.getCharacteristic(Characteristic.On).updateValue(false).on("set", this.setStatus);
+    this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false).on("set", this.setStatus);
 
     // Initialize the accessory
     this.init();
@@ -192,7 +191,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
    */
   private shouldCheckPresence() {
     // Check if switch is on or off
-    const state = (this.accessoryService.getCharacteristic(Characteristic.On) as any).value;
+    const state = (this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On) as any).value;
     if (this.config.debug) {
       this.log.info(`Current accessory state is: ${JSON.stringify(state)}`);
     }
