@@ -1,6 +1,6 @@
 {
   "name": "homebridge-presence-switch-msgraph",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Switch for Microsoft Graph presence status",
   "license": "MIT",
   "keywords": [
