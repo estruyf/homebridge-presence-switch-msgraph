@@ -1,5 +1,6 @@
+/// <reference types="hap-nodejs" />
+
 import { Homebridge, HomebridgeAccessory, PresenceConfig, Logger, Presence, Availability, StatusColors, RGB } from '../models';
-import 'hap-nodejs';
 import persist from 'node-persist';
 import { Auth, splitHours } from '../helpers';
 import { MsGraphService, BusyLightService } from '../services';

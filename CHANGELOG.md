@@ -1,5 +1,9 @@
 # Changelog
 
+## [18/04/2020] 1.2.2
+
+- Removed `hap-nodejs` reference in PresenceAccessory
+
 ## [14/04/2020] 1.2.1
 
 - Remove the `hap-nodejs` dependency
