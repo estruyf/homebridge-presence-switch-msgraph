@@ -1,5 +1,9 @@
 # Changelog
 
+## [1/10/2020] 1.2.3
+
+- Fix for when MSGraph timesout
+
 ## [18/04/2020] 1.2.2
 
 - Removed `hap-nodejs` reference in PresenceAccessory
