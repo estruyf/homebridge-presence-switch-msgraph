@@ -32,7 +32,7 @@
     "@types/node-fetch": "2.5.5",
     "@types/node-persist": "3.0.0",
     "hap-nodejs": "0.4.51",
-    "homebridge": "0.4.53",
+    "homebridge": "1.1.6",
     "typescript": "3.8.3"
   }
 }

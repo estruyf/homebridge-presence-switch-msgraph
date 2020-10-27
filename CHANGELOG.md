@@ -1,8 +1,12 @@
 # Changelog
 
+## [27/10/2020] 1.3.0
+
+- Added support for presence indicator switch (automation)
+
 ## [1/10/2020] 1.2.3
 
-- Fix for when MSGraph timesout
+- Fix for when MSGraph timeout
 
 ## [18/04/2020] 1.2.2
 

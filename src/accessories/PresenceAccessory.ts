@@ -4,6 +4,7 @@ import { Homebridge, HomebridgeAccessory, PresenceConfig, Logger, Presence, Avai
 import persist from 'node-persist';
 import { Auth, splitHours } from '../helpers';
 import { MsGraphService, BusyLightService } from '../services';
+import { Characteristic } from 'hap-nodejs';
 
 const MSGRAPH_URL = `https://graph.microsoft.com`;
 const MSGRAPH_PRESENCE_PATH = `beta/me/presence`;
@@ -15,6 +16,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private static version: string = null;
 
   private accessoryService: HAPNodeJS.Service = null;
+  private accessoryStateService: HAPNodeJS.Service = null;
   private storage: typeof persist;
   private auth: Auth = null;
 
@@ -80,6 +82,14 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.accessoryService = new PresenceAccessory.service.Switch(this.config.name, null);
     this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false).on("set", this.setStatus);
 
+    // Register new state service
+    this.accessoryStateService = new PresenceAccessory.service.Lightbulb(`${this.config.name} Switch`, null);
+    this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).setProps({
+      minValue: 0,
+      maxValue: 100,
+      minStep: 25
+    } as any); 
+
     // Initialize the accessory
     this.init();
   }
@@ -94,7 +104,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
                       .setCharacteristic(characteristic.Model, 'Presence Indicator')
                       .setCharacteristic(characteristic.SerialNumber, 'PI_01')
                       .setCharacteristic(characteristic.FirmwareRevision, PresenceAccessory.version);
-    return [informationService, this.accessoryService];
+    return [informationService, this.accessoryService, this.accessoryStateService];
   }
 
   /**
@@ -151,9 +161,13 @@ export class PresenceAccessory implements HomebridgeAccessory {
           if (!color || (!color.red && !color.green && !color.blue)) {
             color = this.defaultColors[availability.toLowerCase()];
           }
+
+          this.setSwitchState(availability);
+
           await BusyLightService.post(this.config.setColorApi, color, this.log, this.config.debug);
         }
       } else {
+        this.setSwitchState(Availability.Offline);
         await BusyLightService.get(this.config.offApi, this.log, this.config.debug);
       }
     }
@@ -161,6 +175,18 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.timeoutIdx = setTimeout(() => {
       this.presencePolling();
     }, (this.config.interval >= 1 ? this.config.interval : 1) * 60 * 1000);
+  }
+
+  private setSwitchState(availability: Availability) {
+    if (availability === Availability.Available) {
+      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(100);
+    } else if (availability === Availability.Away) {
+      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(75);
+    } else if (availability === Availability.Busy) {
+      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(50);
+    } else {
+      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(0);
+    }
   }
 
   /**
