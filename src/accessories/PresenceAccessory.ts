@@ -16,9 +16,13 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private static version: string = null;
 
   private accessoryService: HAPNodeJS.Service = null;
-  private accessoryStateService: HAPNodeJS.Service = null;
   private storage: typeof persist;
   private auth: Auth = null;
+
+  private switchOff: HAPNodeJS.Service = null;
+  private switchAway: HAPNodeJS.Service = null;
+  private switchBusy: HAPNodeJS.Service = null;
+  private switchAvailable: HAPNodeJS.Service = null;
 
   private timeoutIdx: NodeJS.Timeout = null;
 
@@ -82,13 +86,18 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.accessoryService = new PresenceAccessory.service.Switch(this.config.name, null);
     this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false).on("set", this.setStatus);
 
-    // Register new state service
-    this.accessoryStateService = new PresenceAccessory.service.Lightbulb(`${this.config.name} Switch`, null);
-    this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).setProps({
-      minValue: 0,
-      maxValue: 100,
-      minStep: 25
-    } as any); 
+    // Register state switches
+    this.switchOff = new PresenceAccessory.service.Switch(`${this.config.name} Switch Offline`, 'Offline');
+    this.switchOff.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+    
+    this.switchBusy = new PresenceAccessory.service.Switch(`${this.config.name} Switch Busy`, 'Busy');
+    this.switchBusy.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+
+    this.switchAway = new PresenceAccessory.service.Switch(`${this.config.name} Switch Away`, 'Away');
+    this.switchAway.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+
+    this.switchAvailable = new PresenceAccessory.service.Switch(`${this.config.name} Switch Available`, 'Available');
+    this.switchAvailable.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
     // Initialize the accessory
     this.init();
@@ -104,7 +113,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
                       .setCharacteristic(characteristic.Model, 'Presence Indicator')
                       .setCharacteristic(characteristic.SerialNumber, 'PI_01')
                       .setCharacteristic(characteristic.FirmwareRevision, PresenceAccessory.version);
-    return [informationService, this.accessoryService, this.accessoryStateService];
+    return [informationService, this.accessoryService, this.switchOff, this.switchBusy, this.switchAway, this.switchAvailable];
   }
 
   /**
@@ -177,15 +186,33 @@ export class PresenceAccessory implements HomebridgeAccessory {
     }, (this.config.interval >= 1 ? this.config.interval : 1) * 60 * 1000);
   }
 
+  /**
+   * Turn the right state on/off of the state switches
+   * @param availability 
+   */
   private setSwitchState(availability: Availability) {
+    const characteristic = PresenceAccessory.characteristic.On;
+
     if (availability === Availability.Available) {
-      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(100);
+      this.switchAvailable.getCharacteristic(characteristic).updateValue(true);
+      this.switchAway.getCharacteristic(characteristic).updateValue(false);
+      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
+      this.switchOff.getCharacteristic(characteristic).updateValue(false);
     } else if (availability === Availability.Away) {
-      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(75);
+      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
+      this.switchAway.getCharacteristic(characteristic).updateValue(true);
+      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
+      this.switchOff.getCharacteristic(characteristic).updateValue(false);
     } else if (availability === Availability.Busy) {
-      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(50);
+      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
+      this.switchAway.getCharacteristic(characteristic).updateValue(false);
+      this.switchBusy.getCharacteristic(characteristic).updateValue(true);
+      this.switchOff.getCharacteristic(characteristic).updateValue(false);
     } else {
-      this.accessoryStateService.getCharacteristic(PresenceAccessory.characteristic.Brightness).updateValue(0);
+      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
+      this.switchAway.getCharacteristic(characteristic).updateValue(false);
+      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
+      this.switchOff.getCharacteristic(characteristic).updateValue(true);
     }
   }
 
