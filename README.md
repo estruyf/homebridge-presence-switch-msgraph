@@ -52,6 +52,28 @@ The `accessory` config could look like this:
 }
 ```
 
+Since version `1.3.0` the plugin contains 5 state switches:
+
+- Offline
+- Do not disturb
+- Busy
+- Away
+- Available
+
+These switches can be used in `HomeKit` automation. If you use these, you do not have to set `setColorApi`, `offApi`, and `onApi`. Config could look like this:
+
+```json
+{
+  "accessory": "presence-switch",
+  "name": "Presence Indicator",
+  "appId": "66204339-daf1-40fa-aa31-57342272edce",
+  "interval": 1,
+  "startTime": "8:30",
+  "endTime": "18:00",
+  "weekend": false,
+}
+```
+
 ## Useful links
 
 - [https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI)

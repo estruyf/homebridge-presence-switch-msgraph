@@ -23,6 +23,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private switchAway: HAPNodeJS.Service = null;
   private switchBusy: HAPNodeJS.Service = null;
   private switchAvailable: HAPNodeJS.Service = null;
+  private switchDnD: HAPNodeJS.Service = null;
 
   private timeoutIdx: NodeJS.Timeout = null;
 
@@ -39,6 +40,11 @@ export class PresenceAccessory implements HomebridgeAccessory {
     },
     busy: {
       red: 179,
+      green: 0,
+      blue: 0
+    },
+    donotdisturb: {
+      red: 149,
       green: 0,
       blue: 0
     }
@@ -99,6 +105,9 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.switchAvailable = new PresenceAccessory.service.Switch(`${this.config.name} Switch Available`, 'Available');
     this.switchAvailable.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
+    this.switchDnD = new PresenceAccessory.service.Switch(`${this.config.name} Switch DnD`, 'DnD');
+    this.switchDnD.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+
     // Initialize the accessory
     this.init();
   }
@@ -136,7 +145,9 @@ export class PresenceAccessory implements HomebridgeAccessory {
       // Turned on
       this.auth = new Auth(this.config.appId, this.storage);
       this.auth.ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug).then(async (accessToken) => {
-        await BusyLightService.get(this.config.onApi, this.log, this.config.debug);
+        if (this.config.onApi) {
+          await BusyLightService.get(this.config.onApi, this.log, this.config.debug);
+        }
 
         if (accessToken) {
           this.log.info(`Access token acquired.`);
@@ -173,11 +184,16 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
           this.setSwitchState(availability);
 
-          await BusyLightService.post(this.config.setColorApi, color, this.log, this.config.debug);
+          if (this.config.setColorApi)  {
+            await BusyLightService.post(this.config.setColorApi, color, this.log, this.config.debug);
+          }
         }
       } else {
         this.setSwitchState(Availability.Offline);
-        await BusyLightService.get(this.config.offApi, this.log, this.config.debug);
+
+        if (this.config.offApi) {
+          await BusyLightService.get(this.config.offApi, this.log, this.config.debug);
+        }
       }
     }
 
@@ -198,21 +214,31 @@ export class PresenceAccessory implements HomebridgeAccessory {
       this.switchAway.getCharacteristic(characteristic).updateValue(false);
       this.switchBusy.getCharacteristic(characteristic).updateValue(false);
       this.switchOff.getCharacteristic(characteristic).updateValue(false);
+      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
     } else if (availability === Availability.Away) {
       this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
       this.switchAway.getCharacteristic(characteristic).updateValue(true);
       this.switchBusy.getCharacteristic(characteristic).updateValue(false);
       this.switchOff.getCharacteristic(characteristic).updateValue(false);
+      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
     } else if (availability === Availability.Busy) {
       this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
       this.switchAway.getCharacteristic(characteristic).updateValue(false);
       this.switchBusy.getCharacteristic(characteristic).updateValue(true);
       this.switchOff.getCharacteristic(characteristic).updateValue(false);
+      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
+    } else if (availability === Availability.DoNotDisturb) {
+      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
+      this.switchAway.getCharacteristic(characteristic).updateValue(false);
+      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
+      this.switchOff.getCharacteristic(characteristic).updateValue(false);
+      this.switchDnD.getCharacteristic(characteristic).updateValue(true);
     } else {
       this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
       this.switchAway.getCharacteristic(characteristic).updateValue(false);
       this.switchBusy.getCharacteristic(characteristic).updateValue(false);
       this.switchOff.getCharacteristic(characteristic).updateValue(true);
+      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
     }
   }
 
@@ -231,8 +257,9 @@ export class PresenceAccessory implements HomebridgeAccessory {
         return Availability.Away;
       case Availability.Busy:
       case Availability.BusyIdle:
-      case Availability.DoNotDisturb:
         return Availability.Busy;
+      case Availability.DoNotDisturb:
+        return Availability.DoNotDisturb;
       case Availability.Offline:
       case Availability.PresenceUnknown:
       default:
