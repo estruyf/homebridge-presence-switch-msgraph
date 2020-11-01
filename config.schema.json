@@ -10,10 +10,7 @@
     "type": "object",
     "required": [
       "name",
-      "appId",
-      "setColorApi",
-      "offApi",
-      "onApi"
+      "appId"
     ],
     "properties": {
       "name": {
@@ -164,12 +161,43 @@
                 "default": 0
               }
             }
+          },
+          "donotdisturb": {
+            "type": "object",
+            "title": "Do Not Disturb",
+            "description": "The color for when you are in do not disturb mode.",
+            "default": {},
+            "required": [
+              "red",
+              "green",
+              "blue"
+            ],
+            "properties": {
+              "red": {
+                "type": "integer",
+                "title": "Red",
+                "description": "Value between: 0 - 255.",
+                "default": 149
+              },
+              "green": {
+                "type": "integer",
+                "title": "Green",
+                "description": "Value between: 0 - 255.",
+                "default": 0
+              },
+              "blue": {
+                "type": "integer",
+                "title": "Blue",
+                "description": "Value between: 0 - 255.",
+                "default": 0
+              }
+            }
           }
         }
       },
       "lightType": {
         "title": "Light type",
-        "description": "Define the type of light you want to show.",
+        "description": "Define the type of light you want to show (not yet supported).",
         "type": "string",
         "default": "switch",
         "oneOf": [

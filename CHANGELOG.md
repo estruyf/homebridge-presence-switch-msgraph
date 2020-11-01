@@ -1,8 +1,14 @@
 # Changelog
 
+## [01/11/2020] 1.3.0
+
+- Added presence indicator switches for `HomeKit` automation: offline, away, busy, do not disturb, available
+- The API config properties `setColorApi`, `offApi`, and `onApi` are now optional
+- Added `DoNotDisturb` status color
+
 ## [1/10/2020] 1.2.3
 
-- Fix for when MSGraph timesout
+- Fix for when MSGraph timeout
 
 ## [18/04/2020] 1.2.2
 

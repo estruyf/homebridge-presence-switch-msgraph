@@ -3,6 +3,7 @@ export interface StatusColors {
   available: RGB;
   away: RGB;
   busy: RGB;  
+  donotdisturb: RGB;  
 }
 
 export interface RGB {

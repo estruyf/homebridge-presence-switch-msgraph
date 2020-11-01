@@ -4,10 +4,7 @@
   "required": [
     "name",
     "accessory",
-    "appId",
-    "setColorApi",
-    "offApi",
-    "onApi"
+    "appId"
   ],
   "properties": {
     "name": {
@@ -131,6 +128,37 @@
         "busy": {
           "type": "object",
           "title": "The Busy Schema",
+          "description": "An explanation about the purpose of this instance.",
+          "default": {},
+          "required": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "properties": {
+            "red": {
+              "type": "integer",
+              "title": "The Red Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "green": {
+              "type": "integer",
+              "title": "The Green Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            },
+            "blue": {
+              "type": "integer",
+              "title": "The Blue Schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": 0
+            }
+          }
+        },
+        "donotdisturb": {
+          "type": "object",
+          "title": "The DoNotDisturb Schema",
           "description": "An explanation about the purpose of this instance.",
           "default": {},
           "required": [
