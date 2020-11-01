@@ -5,14 +5,7 @@
 
 More information for now can be found here: [https://www.eliostruyf.com/diy-building-busy-light-show-microsoft-teams-presence/](https://www.eliostruyf.com/diy-building-busy-light-show-microsoft-teams-presence/).
 
-## Local development
-
-```
-nvm use v12
-cd ~/.nvm/versions/node/v12.15.0/bin/
-
-homebridge -D -I -U ~/nodejs/homebridge/homebridge-presence-switch-msgraph/debug -P ~/nodejs/homebridge/homebridge-presence-switch-msgraph
-```
+> **Info**: Since verions `1.3.0` the plugin added state switches. These switches can be used for `HomeKit` automation. You can still use the API approach as well. This now supports the `Do Not Disturb` mode as well.
 
 ## Config
 
@@ -45,6 +38,11 @@ The `accessory` config could look like this:
       "red": 179,
       "green": 0,
       "blue": 0
+    },
+    "donotdisturb": {
+      "red": 149,
+      "green": 0,
+      "blue": 0
     }
   },
   "lightType": "",
@@ -72,6 +70,15 @@ These switches can be used in `HomeKit` automation. If you use these, you do not
   "endTime": "18:00",
   "weekend": false,
 }
+```
+
+## Local development
+
+```
+nvm use v12
+cd ~/.nvm/versions/node/v12.15.0/bin/
+
+homebridge -D -I -U ~/nodejs/homebridge/homebridge-presence-switch-msgraph/debug -P ~/nodejs/homebridge/homebridge-presence-switch-msgraph
 ```
 
 ## Useful links
