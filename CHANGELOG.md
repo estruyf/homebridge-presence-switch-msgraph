@@ -1,5 +1,9 @@
 # Changelog
 
+## [12/12/2020] 1.4.0
+
+- Updated the `beta` API to `v1.0` API endpoint
+
 ## [01/11/2020] 1.3.0
 
 - Added presence indicator switches for `HomeKit` automation: offline, away, busy, do not disturb, available
