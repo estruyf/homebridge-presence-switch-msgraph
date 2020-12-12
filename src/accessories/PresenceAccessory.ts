@@ -7,7 +7,7 @@ import { MsGraphService, BusyLightService } from '../services';
 import { Characteristic } from 'hap-nodejs';
 
 const MSGRAPH_URL = `https://graph.microsoft.com`;
-const MSGRAPH_PRESENCE_PATH = `beta/me/presence`;
+const MSGRAPH_PRESENCE_PATH = `v1.0/me/presence`;
 
 export class PresenceAccessory implements HomebridgeAccessory {
   private static api: Homebridge = null;
