@@ -67,7 +67,8 @@ export class Auth {
       }
 
       let getTokenPromise = this.ensureAccessTokenWithDeviceCode;
-      if (this.service.refreshToken || (accessToken && accessToken.refreshToken)) {
+      if (accessToken && accessToken.refreshToken) {
+        this.service.refreshToken = accessToken.refreshToken;
         getTokenPromise = this.ensureAccessTokenWithRefreshToken;
       }
 
