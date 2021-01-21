@@ -1,5 +1,13 @@
 # Changelog
 
+## [11/01/2021] 1.4.1
+
+- Fix for being able to lower the polling refresh under 1 minute
+
+## [12/12/2020] 1.4.0
+
+- Updated the `beta` API to `v1.0` API endpoint
+
 ## [01/11/2020] 1.3.0
 
 - Added presence indicator switches for `HomeKit` automation: offline, away, busy, do not disturb, available
