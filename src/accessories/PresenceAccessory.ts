@@ -24,7 +24,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private switchBusy: HAPNodeJS.Service = null;
   private switchAvailable: HAPNodeJS.Service = null;
   private switchDnD: HAPNodeJS.Service = null;
-  
+
   private activitySwitches: { [name: string]: HAPNodeJS.Service} = {};
 
   private timeoutIdx: NodeJS.Timeout = null;
@@ -113,13 +113,10 @@ export class PresenceAccessory implements HomebridgeAccessory {
     // Register custom switches if needed
     const otherStates = Object.keys(this.config.statusColors).filter(status => status !== "available" && status !== "away" && status !== "busy" && status !== "donotdisturb");
     if (otherStates && otherStates.length > 0) {
-      console.log(otherStates);
       for (const state of otherStates) {
-        console.log(state);
         this.activitySwitches[state.toLowerCase()] = new PresenceAccessory.service.Switch(`Switch ${state} - ${this.config.name}`, state);
         this.activitySwitches[state.toLowerCase()].getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
       }
-      console.log(this.activitySwitches.length, this.activitySwitches);
     }
 
     // Initialize the accessory
