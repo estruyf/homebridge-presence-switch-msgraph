@@ -4,7 +4,6 @@ import { Homebridge, HomebridgeAccessory, PresenceConfig, Logger, Presence, Avai
 import persist from 'node-persist';
 import { Auth, splitHours } from '../helpers';
 import { MsGraphService, BusyLightService } from '../services';
-import { Characteristic } from 'hap-nodejs';
 import { Activity } from '../models/Activity';
 
 const MSGRAPH_URL = `https://graph.microsoft.com`;
