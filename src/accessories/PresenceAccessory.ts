@@ -134,7 +134,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
                       .setCharacteristic(characteristic.Model, 'Presence Indicator')
                       .setCharacteristic(characteristic.SerialNumber, 'PI_01')
                       .setCharacteristic(characteristic.FirmwareRevision, PresenceAccessory.version);
-    return [informationService, this.accessoryService, this.switchOff, this.switchDnD, this.switchBusy, this.switchAway, this.switchAvailable];
+    return [informationService, this.accessoryService, this.switchOff, this.switchDnD, this.switchBusy, this.switchAway, this.switchAvailable, ...this.activitySwitches];
   }
 
   /**
