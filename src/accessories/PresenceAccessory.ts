@@ -114,6 +114,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
     // Register custom switches if needed
     const otherStates = Object.keys(this.config.statusColors).filter(status => status !== "available" && status !== "away" && status !== "busy" && status !== "donotdisturb");
     if (otherStates && otherStates.length > 0) {
+      console.log(otherStates)
       for (const state of otherStates) {
         this.activitySwitches[state.toLowerCase()] = new PresenceAccessory.service.Switch(`${this.config.name} Switch ${state}`, state);
         this.activitySwitches[state.toLowerCase()].getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
