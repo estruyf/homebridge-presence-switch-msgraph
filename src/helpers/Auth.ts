@@ -68,6 +68,9 @@ export class Auth {
 
       let getTokenPromise = this.ensureAccessTokenWithDeviceCode;
       if (accessToken && accessToken.refreshToken) {
+        if (debug) {
+          log.info(`Retrieving access token with current refresh token: ${accessToken.refreshToken}`);
+        }
         this.service.refreshToken = accessToken.refreshToken;
         getTokenPromise = this.ensureAccessTokenWithRefreshToken;
       }
