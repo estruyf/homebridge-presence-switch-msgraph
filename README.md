@@ -31,6 +31,8 @@ If you want to add for instance a `InACall` activity status, you can do this by 
 }
 ```
 
+> **Info**: each off these activities you add, will also get a corresponding switch. That way you can add do Homekit automation based on the state of these switches.
+
 ## Config
 
 The `accessory` config could look like this:
