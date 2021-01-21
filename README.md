@@ -7,6 +7,30 @@ More information for now can be found here: [https://www.eliostruyf.com/diy-buil
 
 > **Info**: Since verions `1.3.0` the plugin added state switches. These switches can be used for `HomeKit` automation. You can still use the API approach as well. This now supports the `Do Not Disturb` mode as well.
 
+## Custom activity
+
+As of version `1.5.0` you are now able to add custom activity statuses to the plugin. This mean, that besides the availablity (`available`, `away`, `busy`, and `donotdisturb`) statuses, you can now add your own activities you want to track. 
+
+Supported activities are: `Available`, `Away`, `BeRightBack`, `Busy`, `DoNotDisturb`, `InACall`, `InAConferenceCall`, `Inactive`, `InAMeeting`, `Offline`, `OffWork`, `OutOfOffice`, `PresenceUnknown`, `Presenting`, `UrgentInterruptionsOnly`.
+
+If you want to add for instance a `InACall` activity status, you can do this by adding the activity status to the `statusColor` config object as follows:
+
+```json
+{
+  ...,
+
+  "statusColors": {
+    ...,
+
+    "InACall": {
+      "red": 255,
+      "green": 0,
+      "blue": 0
+    }
+  }
+}
+```
+
 ## Config
 
 The `accessory` config could look like this:
@@ -76,18 +100,3 @@ These switches can be used in `HomeKit` automation. If you use these, you do not
   "weekend": false,
 }
 ```
-
-## Local development
-
-```
-npm install -g homebridge homebridge-config-ui-x
-
-nvm use v12
-cd ~/.nvm/versions/node/v12.20.0/bin/
-
-homebridge -D -I -U ~/nodejs/homebridge-presence-switch-msgraph/debug -P ~/nodejs/homebridge-presence-switch-msgraph
-```
-
-## Useful links
-
-- [https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI)
