@@ -26,7 +26,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private switchAvailable: HAPNodeJS.Service = null;
   private switchDnD: HAPNodeJS.Service = null;
 
-  private activitySwitches: HAPNodeJS.Service = null;
+  private activitySwitches: HAPNodeJS.Service[] = [];
 
   private timeoutIdx: NodeJS.Timeout = null;
 
