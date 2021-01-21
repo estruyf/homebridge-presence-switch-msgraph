@@ -43,6 +43,11 @@ The `accessory` config could look like this:
       "red": 149,
       "green": 0,
       "blue": 0
+    },
+    "<activity>": {
+      "red": 255,
+      "green": 0,
+      "blue": 0
     }
   },
   "lightType": "",
@@ -75,10 +80,12 @@ These switches can be used in `HomeKit` automation. If you use these, you do not
 ## Local development
 
 ```
-nvm use v12
-cd ~/.nvm/versions/node/v12.15.0/bin/
+npm install -g homebridge homebridge-config-ui-x
 
-homebridge -D -I -U ~/nodejs/homebridge/homebridge-presence-switch-msgraph/debug -P ~/nodejs/homebridge/homebridge-presence-switch-msgraph
+nvm use v12
+cd ~/.nvm/versions/node/v12.20.0/bin/
+
+homebridge -D -I -U ~/nodejs/homebridge-presence-switch-msgraph/debug -P ~/nodejs/homebridge-presence-switch-msgraph
 ```
 
 ## Useful links
