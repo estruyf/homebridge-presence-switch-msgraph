@@ -1,5 +1,10 @@
 # Changelog
 
+## [X/X/2021] 1.5.0
+
+- [#1](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/1) - Persist auth during reboot or when turning the switch on/off
+- [#10](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/10) - Add activity as an option to be used for setting the state
+
 ## [11/01/2021] 1.4.1
 
 - Fix for being able to lower the polling refresh under 1 minute

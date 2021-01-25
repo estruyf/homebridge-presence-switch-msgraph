@@ -4,7 +4,6 @@ import { Homebridge, HomebridgeAccessory, PresenceConfig, Logger, Presence, Avai
 import persist from 'node-persist';
 import { Auth, splitHours } from '../helpers';
 import { MsGraphService, BusyLightService } from '../services';
-import { Characteristic } from 'hap-nodejs';
 import { Activity } from '../models/Activity';
 
 const MSGRAPH_URL = `https://graph.microsoft.com`;
@@ -26,7 +25,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private switchAvailable: HAPNodeJS.Service = null;
   private switchDnD: HAPNodeJS.Service = null;
 
-  private activitySwitches: HAPNodeJS.Service = null;
+  private activitySwitches: { [name: string]: HAPNodeJS.Service} = {};
 
   private timeoutIdx: NodeJS.Timeout = null;
 
@@ -96,26 +95,26 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false).on("set", this.setStatus);
 
     // Register state switches
-    this.switchOff = new PresenceAccessory.service.Switch(`${this.config.name} Switch Offline`, 'Offline');
+    this.switchOff = new PresenceAccessory.service.Switch(`Switch Offline - ${this.config.name}`, 'Offline');
     this.switchOff.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
     
-    this.switchBusy = new PresenceAccessory.service.Switch(`${this.config.name} Switch Busy`, 'Busy');
+    this.switchBusy = new PresenceAccessory.service.Switch(`Switch Busy - ${this.config.name}`, 'Busy');
     this.switchBusy.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
-    this.switchAway = new PresenceAccessory.service.Switch(`${this.config.name} Switch Away`, 'Away');
+    this.switchAway = new PresenceAccessory.service.Switch(`Switch Away - ${this.config.name}`, 'Away');
     this.switchAway.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
-    this.switchAvailable = new PresenceAccessory.service.Switch(`${this.config.name} Switch Available`, 'Available');
+    this.switchAvailable = new PresenceAccessory.service.Switch(`Switch Available - ${this.config.name}`, 'Available');
     this.switchAvailable.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
-    this.switchDnD = new PresenceAccessory.service.Switch(`${this.config.name} Switch DnD`, 'DnD');
+    this.switchDnD = new PresenceAccessory.service.Switch(`Switch DnD - ${this.config.name}`, 'DnD');
     this.switchDnD.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
     // Register custom switches if needed
     const otherStates = Object.keys(this.config.statusColors).filter(status => status !== "available" && status !== "away" && status !== "busy" && status !== "donotdisturb");
     if (otherStates && otherStates.length > 0) {
       for (const state of otherStates) {
-        this.activitySwitches[state.toLowerCase()] = new PresenceAccessory.service.Switch(`${this.config.name} Switch ${state}`, state);
+        this.activitySwitches[state.toLowerCase()] = new PresenceAccessory.service.Switch(`Switch ${state} - ${this.config.name}`, state);
         this.activitySwitches[state.toLowerCase()].getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
       }
     }
@@ -134,7 +133,8 @@ export class PresenceAccessory implements HomebridgeAccessory {
                       .setCharacteristic(characteristic.Model, 'Presence Indicator')
                       .setCharacteristic(characteristic.SerialNumber, 'PI_01')
                       .setCharacteristic(characteristic.FirmwareRevision, PresenceAccessory.version);
-    return [informationService, this.accessoryService, this.switchOff, this.switchDnD, this.switchBusy, this.switchAway, this.switchAvailable];
+    const otherSwitches = Object.keys(this.activitySwitches);
+    return [informationService, this.accessoryService, this.switchOff, this.switchDnD, this.switchBusy, this.switchAway, this.switchAvailable, ...otherSwitches.map(name => this.activitySwitches[name])];
   }
 
   /**

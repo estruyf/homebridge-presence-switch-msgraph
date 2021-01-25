@@ -1,6 +1,6 @@
 {
   "name": "homebridge-presence-switch-msgraph",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Switch for Microsoft Graph presence status",
   "license": "MIT",
   "keywords": [
@@ -10,7 +10,7 @@
   "main": "dist/index.js",
   "scripts": {
     "prepublish": "npm run build",
-    "start": "tsc",
+    "start": "tsc -w",
     "build": "tsc",
     "publish:next": "npm publish --tag next"
   },

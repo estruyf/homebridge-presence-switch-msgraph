@@ -47,7 +47,7 @@ export class Auth {
   public async ensureAccessToken(resource: string, log: Logger, debug: boolean = false, fetchNew: boolean = false): Promise<string | null> {
     try {
       const now: Date = new Date();
-      const accessToken: AccessToken | undefined = this.service.accessTokens[resource];
+      const accessToken: AccessToken | null = await this.getToken(resource);
       const expiresOn: Date = accessToken ? new Date(accessToken.expiresOn) : new Date(0);
 
       // Check if there is still an accessToken available
@@ -67,7 +67,7 @@ export class Auth {
       }
 
       let getTokenPromise = this.ensureAccessTokenWithDeviceCode;
-      if (this.service.refreshToken) {
+      if (this.service.refreshToken || (accessToken && accessToken.refreshToken)) {
         getTokenPromise = this.ensureAccessTokenWithRefreshToken;
       }
 
@@ -78,10 +78,13 @@ export class Auth {
 
       this.service.accessTokens[resource] = {
         expiresOn: tokenResponse.expiresOn as string,
-        value: tokenResponse.accessToken
+        value: tokenResponse.accessToken,
+        refreshToken: tokenResponse.refreshToken
       };
       this.service.refreshToken = tokenResponse.refreshToken;
       this.service.connected = true;
+
+      await this.setToken(resource, this.service.accessTokens[resource]);
 
       await this.storeConnectionInfo(resource);
 
@@ -186,6 +189,22 @@ export class Auth {
           resolve(<TokenResponse>response);
         });
     });
+  }
+  
+  /**
+   * Set and get token
+   */
+  private setToken = async (resource: string, token: AccessToken): Promise<void> => {
+    await this.storage.set(`${this.appId}-${resource}-token`, JSON.stringify(token));
+  }
+
+  private getToken = async (resource: string): Promise<AccessToken | null> => {
+    const token = await this.storage.get(`${this.appId}-${resource}-token`);
+    if (token) {
+      return JSON.parse(token);
+    } else {
+      return null;
+    }
   }
 
   /**
