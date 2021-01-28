@@ -190,7 +190,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
         if (presence && presence.availability) {
           const availability = this.getAvailability(presence.availability);
           const activity = presence.activity;
-          let color: RGB = this.config.statusColors[activity.toLowerCase()] || this.config.statusColors[availability.toLowerCase()];
+          let color: RGB = this.config.statusColors[activity] || this.config.statusColors[availability.toLowerCase()];
           if (!color || (!color.red && !color.green && !color.blue)) {
             color = this.defaultColors[availability.toLowerCase()];
           }
