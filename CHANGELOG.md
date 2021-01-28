@@ -2,6 +2,7 @@
 
 ## [28/01/2021] 1.5.1
 
+- [#10](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/10) - Fix lowercase issue on activity
 - [#12](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/12) - Improvement on the presist auth
 
 ## [25/01/2021] 1.5.0
