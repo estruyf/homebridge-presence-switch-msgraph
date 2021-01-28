@@ -1,6 +1,10 @@
 # Changelog
 
-## [X/X/2021] 1.5.0
+## [28/01/2021] 1.5.1
+
+- [#12](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/12) - Improvement on the presist auth
+
+## [25/01/2021] 1.5.0
 
 - [#1](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/1) - Persist auth during reboot or when turning the switch on/off
 - [#10](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/10) - Add activity as an option to be used for setting the state
