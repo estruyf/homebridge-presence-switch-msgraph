@@ -190,7 +190,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
         if (presence && presence.availability) {
           const availability = this.getAvailability(presence.availability);
           const activity = presence.activity;
-          let color: RGB = this.config.statusColors[activity.toLowerCase()] || this.config.statusColors[availability.toLowerCase()];
+          let color: RGB = this.config.statusColors[activity] || this.config.statusColors[availability.toLowerCase()];
           if (!color || (!color.red && !color.green && !color.blue)) {
             color = this.defaultColors[availability.toLowerCase()];
           }
@@ -241,38 +241,12 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
       return;
     }
-
-    if (availability === Availability.Available) {
-      this.switchAvailable.getCharacteristic(characteristic).updateValue(true);
-      this.switchAway.getCharacteristic(characteristic).updateValue(false);
-      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
-      this.switchOff.getCharacteristic(characteristic).updateValue(false);
-      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
-    } else if (availability === Availability.Away) {
-      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
-      this.switchAway.getCharacteristic(characteristic).updateValue(true);
-      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
-      this.switchOff.getCharacteristic(characteristic).updateValue(false);
-      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
-    } else if (availability === Availability.Busy) {
-      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
-      this.switchAway.getCharacteristic(characteristic).updateValue(false);
-      this.switchBusy.getCharacteristic(characteristic).updateValue(true);
-      this.switchOff.getCharacteristic(characteristic).updateValue(false);
-      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
-    } else if (availability === Availability.DoNotDisturb) {
-      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
-      this.switchAway.getCharacteristic(characteristic).updateValue(false);
-      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
-      this.switchOff.getCharacteristic(characteristic).updateValue(false);
-      this.switchDnD.getCharacteristic(characteristic).updateValue(true);
-    } else {
-      this.switchAvailable.getCharacteristic(characteristic).updateValue(false);
-      this.switchAway.getCharacteristic(characteristic).updateValue(false);
-      this.switchBusy.getCharacteristic(characteristic).updateValue(false);
-      this.switchOff.getCharacteristic(characteristic).updateValue(true);
-      this.switchDnD.getCharacteristic(characteristic).updateValue(false);
-    }
+    
+    this.switchAvailable.getCharacteristic(characteristic).updateValue(availability === Availability.Available);
+    this.switchAway.getCharacteristic(characteristic).updateValue(availability === Availability.Away);
+    this.switchBusy.getCharacteristic(characteristic).updateValue(availability === Availability.Busy);
+    this.switchDnD.getCharacteristic(characteristic).updateValue(availability === Availability.DoNotDisturb);
+    this.switchOff.getCharacteristic(characteristic).updateValue(availability !== Availability.DoNotDisturb && availability !== Availability.Busy && availability !== Availability.Away && availability !== Availability.Available);
 
     for (const switchName of Object.keys(this.activitySwitches)) {
       this.activitySwitches[switchName].getCharacteristic(characteristic).updateValue(false);

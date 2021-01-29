@@ -45,9 +45,10 @@ export class Auth {
    * @param fetchNew 
    */
   public async ensureAccessToken(resource: string, log: Logger, debug: boolean = false, fetchNew: boolean = false): Promise<string | null> {
+    const accessToken: AccessToken | null = await this.getToken(resource);
+
     try {
       const now: Date = new Date();
-      const accessToken: AccessToken | null = await this.getToken(resource);
       const expiresOn: Date = accessToken ? new Date(accessToken.expiresOn) : new Date(0);
 
       // Check if there is still an accessToken available
@@ -67,7 +68,11 @@ export class Auth {
       }
 
       let getTokenPromise = this.ensureAccessTokenWithDeviceCode;
-      if (this.service.refreshToken || (accessToken && accessToken.refreshToken)) {
+      if (accessToken && accessToken.refreshToken) {
+        if (debug) {
+          log.info(`Retrieving access token with current refresh token: ${accessToken.refreshToken}`);
+        }
+        this.service.refreshToken = accessToken.refreshToken;
         getTokenPromise = this.ensureAccessTokenWithRefreshToken;
       }
 
@@ -90,6 +95,10 @@ export class Auth {
 
       return this.service.accessTokens[resource].value;
     } catch (error) {
+      if (accessToken) {
+        await this.removeToken(resource);
+        return await this.ensureAccessToken(resource, log, debug, true);
+      }
       log.error(`Failed to retrieve an accessToken: ${error.message}`);
       return null;
     }
@@ -205,6 +214,10 @@ export class Auth {
     } else {
       return null;
     }
+  }
+
+  private removeToken = async (resource: string): Promise<void> => {
+    this.storage.del(resource);
   }
 
   /**
