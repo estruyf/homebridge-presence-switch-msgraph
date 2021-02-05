@@ -1,5 +1,8 @@
 # Changelog
 
+## [05/02/2021] 1.5.2
+
+- [#14](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/14) - Fix issue with refresh token on error
 ## [29/01/2021] 1.5.1
 
 - [#10](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/10) - Fix lowercase issue on activity
