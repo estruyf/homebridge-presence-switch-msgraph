@@ -96,12 +96,12 @@ export class Auth {
       return this.service.accessTokens[resource].value;
     } catch (error) {
       if (debug) {
-        log.info(`Error: ${error.message}`);
+        log.info(`Error: ${error}`);
       }
 
       if (accessToken) {
         await this.removeToken(resource);
-        this.service.refreshToken = null;
+        this.service = new AuthService();
         return await this.ensureAccessToken(resource, log, debug, true);
       }
 
