@@ -223,7 +223,7 @@ export class Auth {
   }
 
   private removeToken = async (resource: string): Promise<void> => {
-    this.storage.del(resource);
+    await this.storage.del(`${this.appId}-${resource}-token`);
   }
 
   /**
