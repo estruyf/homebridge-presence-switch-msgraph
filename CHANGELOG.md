@@ -1,5 +1,8 @@
 # Changelog
 
+## [01/04/2021] 1.6.0
+
+- [#11](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/11) - Easier activity configuration (implemented by [Ben Fysh](https://github.com/benfysh))
 ## [05/02/2021] 1.5.2
 
 - [#14](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/14) - Fix issue with refresh token on error
