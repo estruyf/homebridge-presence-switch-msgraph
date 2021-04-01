@@ -65,7 +65,7 @@
       },
       "statusColors": {
         "title": "Status color",
-        "description": "Define the color values for the following states: 'available', 'busy', and 'away'.",
+        "description": "Define the color values for the following states: 'available', 'busy', 'away' and 'do not disturb'.",
         "type": "object",
         "default": {},
         "properties": {
@@ -226,6 +226,64 @@
       }
     }
   },
-  "form": null,
-  "display": null
+    "layout":
+    [
+        {
+            "items":
+            [
+                "name",
+                "appId",
+                "interval",
+                "startTime",
+                "endTime",
+                "weekend"
+            ]
+        },
+        {
+            "type": "fieldset",
+            "title": "Light Details",
+            "description": "Expand to enter light API and colour details",
+            "expandable": true,
+            "items":
+            [
+                "setColorApi",
+                "onApi",
+                "offApi",
+                "lightType"
+            ]
+        },
+        {
+            "key": "statusColors",
+            "expandable": true,
+            "title": "Status Colors",
+            "description": "Expand to enter status color details",
+            "type": "array",
+            "items":
+            [
+                {
+                    "type": "fieldset",
+                    "items":
+                    [
+                        "statusColors",
+                        "statusColors.available",
+                        "statusColors.available.red",
+                        "statusColors.available.green",
+                        "statusColors.available.blue",
+                        "statusColors.busy",
+                        "statusColors.busy.red",
+                        "statusColors.busy.green",
+                        "statusColors.busy.blue",
+                        "statusColors.away",
+                        "statusColors.away.red",
+                        "statusColors.away.green",
+                        "statusColors.away.blue",
+                        "statusColors.donotdisturb",
+                        "statusColors.donotdisturb.red",
+                        "statusColors.donotdisturb.green",
+                        "statusColors.donotdisturb.blue"
+                    ]
+                }
+            ]
+        }
+    ]
 }
