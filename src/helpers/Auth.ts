@@ -101,12 +101,12 @@ export class Auth {
 
       if (accessToken) {
         await this.removeToken(resource);
-        this.service = new AuthService();
-        return await this.ensureAccessToken(resource, log, debug, true);
       }
 
       log.error(`Failed to retrieve an accessToken: ${error.message}`);
-      return null;
+      
+      this.service = new AuthService();
+      return await this.ensureAccessToken(resource, log, debug, true);
     }
   }
 
