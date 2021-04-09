@@ -4,6 +4,7 @@ export interface PresenceConfig {
   name: string;
   accessory: string;
   appId: string;
+  tenantId: string;
   interval: number;
   setColorApi: string;
   offApi: string;

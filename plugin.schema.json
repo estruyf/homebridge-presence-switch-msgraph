@@ -18,6 +18,12 @@
       "type": "string",
       "default": ""
     },
+    "tenantId": {
+      "title": "Azure AD tenant ID",
+      "description": "The GUID or URL of the tenant.",
+      "type": "string",
+      "default": ""
+    },
     "interval": {
       "title": "Interval",
       "description": "Polling interval.",

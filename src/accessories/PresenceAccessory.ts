@@ -56,6 +56,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
     name: null,
     accessory: null,
     appId: null,
+    tenantId: null,
     interval: 1, // Every minute
     setColorApi: null,
     offApi: null,
@@ -155,7 +156,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private setStatus = (on: boolean, callback: () => void) => {
     if (on) {
       // Turned on
-      this.auth = new Auth(this.config.appId, this.storage);
+      this.auth = new Auth(this.config.tenantId, this.config.appId, this.storage);
       this.auth.ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug).then(async (accessToken) => {
         if (this.config.onApi) {
           await BusyLightService.get(this.config.onApi, this.log, this.config.debug);

@@ -233,6 +233,7 @@
             [
                 "name",
                 "appId",
+                "tenantId",
                 "interval",
                 "startTime",
                 "endTime",
