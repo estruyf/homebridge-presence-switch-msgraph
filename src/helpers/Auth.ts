@@ -31,9 +31,9 @@ export class Auth {
   private service: AuthService = null;
   private userCodeInfo?: UserCodeInfo;
 
-  constructor(private appId: string, private storage: typeof persist) {
+  constructor(private tenantId: string, private appId: string, private storage: typeof persist) {
     this.service = new AuthService();
-    this.authCtx = new AuthenticationContext(`${MS_LOGIN_URL}/common`)
+    this.authCtx = new AuthenticationContext(`${MS_LOGIN_URL}/${tenantId || "common"}`)
   }
 
   /**

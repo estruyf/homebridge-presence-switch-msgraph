@@ -1,5 +1,9 @@
 # Changelog
 
+## [09/05/2021] 1.7.0
+
+- [#18](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/18) - Added `tenantId` as an extra option to allow multi-tenant setups
+
 ## [02/04/2021] 1.6.1
 
 - [#17](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/17) - Restart the authentication process on failure.
