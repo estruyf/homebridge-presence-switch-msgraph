@@ -95,7 +95,7 @@ These switches can be used in `HomeKit` automation. If you use these, you do not
 {
   "accessory": "presence-switch",
   "name": "Presence Indicator",
-  "appId": "66204339-daf1-40fa-aa31-57342272edce",
+  "appId": "707e1e80-fd26-46dd-bdd1-6d8e1a585eea",
   "interval": 1,
   "startTime": "8:30",
   "endTime": "18:00",
