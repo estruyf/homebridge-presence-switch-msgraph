@@ -41,7 +41,7 @@ The `accessory` config could look like this:
 {
   "accessory": "presence-switch",
   "name": "Presence Indicator",
-  "appId": "66204339-daf1-40fa-aa31-57342272edce",
+  "appId": "707e1e80-fd26-46dd-bdd1-6d8e1a585eea",
   "interval": 1,
   "setColorApi": "http://127.0.0.1:5000/api/switch",
   "offApi": "http://127.0.0.1:5000/api/off",
