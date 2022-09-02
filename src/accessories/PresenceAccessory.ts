@@ -68,13 +68,13 @@ export class PresenceAccessory implements HomebridgeAccessory {
     weekend: false,
     debug: false
   };
-  
+
   /**
    * Initialize the accessory registration
-   * 
-   * @param homebridge 
-   * @param packageJSON 
-   * @param platformName 
+   *
+   * @param homebridge
+   * @param packageJSON
+   * @param platformName
    */
   public static register(homebridge: Homebridge, packageJSON: any, platformName: string) {
     console.log(`The ${packageJSON.name} plugin version is: ${packageJSON.version}. Installed on Homebridge version: ${homebridge.version}.`);
@@ -83,7 +83,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.service = homebridge.hap.Service;
     this.characteristic = homebridge.hap.Characteristic;
     this.version = packageJSON.version;
-    
+
     homebridge.registerAccessory(packageJSON.name, platformName, PresenceAccessory);
   }
 
@@ -96,26 +96,26 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false).on("set", this.setStatus);
 
     // Register state switches
-    this.switchOff = new PresenceAccessory.service.Switch(`Switch Offline - ${this.config.name}`, 'Offline');
+    this.switchOff = new PresenceAccessory.service.Switch(`${this.config.name} - Offline`, 'Offline');
     this.switchOff.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
-    
-    this.switchBusy = new PresenceAccessory.service.Switch(`Switch Busy - ${this.config.name}`, 'Busy');
+
+    this.switchBusy = new PresenceAccessory.service.Switch(`${this.config.name} - Busy`, 'Busy');
     this.switchBusy.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
-    this.switchAway = new PresenceAccessory.service.Switch(`Switch Away - ${this.config.name}`, 'Away');
+    this.switchAway = new PresenceAccessory.service.Switch(`${this.config.name} - Away`, 'Away');
     this.switchAway.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
-    this.switchAvailable = new PresenceAccessory.service.Switch(`Switch Available - ${this.config.name}`, 'Available');
+    this.switchAvailable = new PresenceAccessory.service.Switch(`${this.config.name} - Available`, 'Available');
     this.switchAvailable.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
-    this.switchDnD = new PresenceAccessory.service.Switch(`Switch DnD - ${this.config.name}`, 'DnD');
+    this.switchDnD = new PresenceAccessory.service.Switch(`${this.config.name} - DnD`, 'DnD');
     this.switchDnD.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
 
     // Register custom switches if needed
     const otherStates = Object.keys(this.config.statusColors).filter(status => status !== "available" && status !== "away" && status !== "busy" && status !== "donotdisturb");
     if (otherStates && otherStates.length > 0) {
       for (const state of otherStates) {
-        this.activitySwitches[state.toLowerCase()] = new PresenceAccessory.service.Switch(`Switch ${state} - ${this.config.name}`, state);
+        this.activitySwitches[state.toLowerCase()] = new PresenceAccessory.service.Switch(`${this.config.name} - ${state}`, state);
         this.activitySwitches[state.toLowerCase()].getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
       }
     }
@@ -218,7 +218,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
   /**
    * Turn the right state on/off of the state switches
-   * @param availability 
+   * @param availability
    */
   private setSwitchState(availability: Availability, activity: Activity) {
     const characteristic = PresenceAccessory.characteristic.On;
@@ -226,7 +226,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
     if (activity && typeof this.activitySwitches[activity.toLowerCase()] !== "undefined") {
       for (const switchName of Object.keys(this.activitySwitches)) {
         const activitySwitch = this.activitySwitches[switchName];
-        
+
         if (switchName === activity.toLowerCase()) {
           activitySwitch.getCharacteristic(characteristic).updateValue(true);
         } else {
@@ -242,7 +242,7 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
       return;
     }
-    
+
     this.switchAvailable.getCharacteristic(characteristic).updateValue(availability === Availability.Available);
     this.switchAway.getCharacteristic(characteristic).updateValue(availability === Availability.Away);
     this.switchBusy.getCharacteristic(characteristic).updateValue(availability === Availability.Busy);
@@ -256,8 +256,8 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
   /**
    * Retrieve the availability status
-   * 
-   * @param presence 
+   *
+   * @param presence
    */
   private getAvailability(presence: Availability) {
     switch(presence) {
