@@ -1,5 +1,9 @@
 # Changelog
 
+## [12/04/2024] 1.8.0
+
+- [#40](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/40): Added a reset button to clear the stored token
+
 ## [09/05/2021] 1.7.0
 
 - [#18](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/18) - Added `tenantId` as an extra option to allow multi-tenant setups
@@ -15,6 +19,7 @@
 ## [05/02/2021] 1.5.2
 
 - [#14](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/14) - Fix issue with refresh token on error
+
 ## [29/01/2021] 1.5.1
 
 - [#10](https://github.com/estruyf/homebridge-presence-switch-msgraph/issues/10) - Fix lowercase issue on activity
