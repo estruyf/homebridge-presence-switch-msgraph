@@ -1,6 +1,13 @@
-import { AuthenticationContext, TokenResponse, ErrorResponse, UserCodeInfo, Logging, LoggingLevel } from 'adal-node';
-import { Logger, AccessToken } from '../models';
-import persist from 'node-persist';
+import {
+  AuthenticationContext,
+  TokenResponse,
+  ErrorResponse,
+  UserCodeInfo,
+  Logging,
+  LoggingLevel,
+} from "adal-node";
+import { Logger, AccessToken } from "../models";
+import persist from "node-persist";
 
 const MS_LOGIN_URL = "https://login.microsoftonline.com";
 
@@ -31,30 +38,45 @@ export class Auth {
   private service: AuthService = null;
   private userCodeInfo?: UserCodeInfo;
 
-  constructor(private tenantId: string, private appId: string, private storage: typeof persist) {
+  constructor(
+    private tenantId: string,
+    private appId: string,
+    private storage: typeof persist
+  ) {
     this.service = new AuthService();
-    this.authCtx = new AuthenticationContext(`${MS_LOGIN_URL}/${tenantId || "common"}`)
+    this.authCtx = new AuthenticationContext(
+      `${MS_LOGIN_URL}/${tenantId || "common"}`
+    );
   }
 
   /**
    * Retrieve an accessToken
-   * 
-   * @param resource 
-   * @param log 
-   * @param debug 
-   * @param fetchNew 
+   *
+   * @param resource
+   * @param log
+   * @param debug
+   * @param fetchNew
    */
-  public async ensureAccessToken(resource: string, log: Logger, debug: boolean = false, fetchNew: boolean = false): Promise<string | null> {
+  public async ensureAccessToken(
+    resource: string,
+    log: Logger,
+    debug: boolean = false,
+    fetchNew: boolean = false
+  ): Promise<string | null> {
     const accessToken: AccessToken | null = await this.getToken(resource);
 
     try {
       const now: Date = new Date();
-      const expiresOn: Date = accessToken ? new Date(accessToken.expiresOn) : new Date(0);
+      const expiresOn: Date = accessToken
+        ? new Date(accessToken.expiresOn)
+        : new Date(0);
 
       // Check if there is still an accessToken available
       if (!fetchNew && accessToken && expiresOn > now) {
         if (debug) {
-          log.info(`Existing access token ${accessToken.value} still valid. Returning...`);
+          log.info(
+            `Existing access token ${accessToken.value} still valid. Returning...`
+          );
         }
         return accessToken.value;
       } else {
@@ -62,7 +84,9 @@ export class Auth {
           if (!accessToken) {
             log.warn(`No token found for resource ${resource}`);
           } else {
-            log.warn(`Access token expired. Token: ${accessToken.value}, ExpiresAt: ${accessToken.expiresOn}`);
+            log.warn(
+              `Access token expired. Token: ${accessToken.value}, ExpiresAt: ${accessToken.expiresOn}`
+            );
           }
         }
       }
@@ -70,7 +94,9 @@ export class Auth {
       let getTokenPromise = this.ensureAccessTokenWithDeviceCode;
       if (accessToken && accessToken.refreshToken) {
         if (debug) {
-          log.info(`Retrieving access token with current refresh token: ${accessToken.refreshToken}`);
+          log.info(
+            `Retrieving access token with current refresh token: ${accessToken.refreshToken}`
+          );
         }
         this.service.refreshToken = accessToken.refreshToken;
         getTokenPromise = this.ensureAccessTokenWithRefreshToken;
@@ -84,7 +110,7 @@ export class Auth {
       this.service.accessTokens[resource] = {
         expiresOn: tokenResponse.expiresOn as string,
         value: tokenResponse.accessToken,
-        refreshToken: tokenResponse.refreshToken
+        refreshToken: tokenResponse.refreshToken,
       };
       this.service.refreshToken = tokenResponse.refreshToken;
       this.service.connected = true;
@@ -104,7 +130,7 @@ export class Auth {
       }
 
       log.error(`Failed to retrieve an accessToken: ${error.message}`);
-      
+
       this.service = new AuthService();
       return await this.ensureAccessToken(resource, log, debug, true);
     }
@@ -115,103 +141,155 @@ export class Auth {
    */
   public cancel(): void {
     if (this.userCodeInfo) {
-      this.authCtx.cancelRequestToGetTokenWithDeviceCode(this.userCodeInfo as UserCodeInfo, (error: Error, response: TokenResponse | ErrorResponse): void => { });
+      this.authCtx.cancelRequestToGetTokenWithDeviceCode(
+        this.userCodeInfo as UserCodeInfo,
+        (error: Error, response: TokenResponse | ErrorResponse): void => {}
+      );
     }
   }
 
   /**
    * Retrieve a new accessToken via the device flow
-   * 
+   *
    * @param resource
    * @param log
    * @param debug
    */
-  private ensureAccessTokenWithDeviceCode = (resource: string, log: Logger, debug: boolean): Promise<TokenResponse> => {
+  private ensureAccessTokenWithDeviceCode = (
+    resource: string,
+    log: Logger,
+    debug: boolean
+  ): Promise<TokenResponse> => {
     if (debug) {
-      log.info(`Starting Auth.ensureAccessTokenWithDeviceCode. resource: ${resource}, debug: ${debug}`);
+      log.info(
+        `Starting Auth.ensureAccessTokenWithDeviceCode. resource: ${resource}, debug: ${debug}`
+      );
     }
 
-    return new Promise<TokenResponse>((resolve: (tokenResponse: TokenResponse) => void, reject: (err: any) => void) => {
-      if (debug) {
-        log.info('No existing refresh token. Starting new device code flow...');
+    return new Promise<TokenResponse>(
+      (
+        resolve: (tokenResponse: TokenResponse) => void,
+        reject: (err: any) => void
+      ) => {
+        if (debug) {
+          log.info(
+            "No existing refresh token. Starting new device code flow..."
+          );
+        }
+
+        this.authCtx.acquireUserCode(
+          resource,
+          this.appId as string,
+          "en-us",
+          (error: Error, response: UserCodeInfo): void => {
+            if (debug) {
+              log.info("Response:");
+              log.info(response);
+              log.info("");
+            }
+
+            if (error) {
+              reject(
+                (response && (response as any).error_description) ||
+                  error.message
+              );
+              return;
+            }
+
+            log.info(response.message);
+
+            this.userCodeInfo = response;
+            this.authCtx.acquireTokenWithDeviceCode(
+              resource,
+              this.appId as string,
+              response,
+              (error: Error, response: TokenResponse | ErrorResponse): void => {
+                if (debug) {
+                  log.info("Response:");
+                  log.info(response);
+                  log.info("");
+                }
+
+                if (error || (response as any).error_description) {
+                  reject(
+                    (response && (response as any).error_description) ||
+                      error.message ||
+                      (error as any).error_description
+                  );
+                  return;
+                }
+
+                this.userCodeInfo = undefined;
+                resolve(<TokenResponse>response);
+              }
+            );
+          }
+        );
       }
-
-      this.authCtx.acquireUserCode(resource, this.appId as string, 'en-us',
-        (error: Error, response: UserCodeInfo): void => {
-          if (debug) {
-            log.info('Response:');
-            log.info(response);
-            log.info('');
-          }
-
-          if (error) {
-            reject((response && (response as any).error_description) || error.message);
-            return;
-          }
-
-          log.info(response.message);
-
-          this.userCodeInfo = response;
-          this.authCtx.acquireTokenWithDeviceCode(resource, this.appId as string, response,
-            (error: Error, response: TokenResponse | ErrorResponse): void => {
-              if (debug) {
-                log.info('Response:');
-                log.info(response);
-                log.info('');
-              }
-
-              if (error || (response as any).error_description) {
-                reject((response && (response as any).error_description) || error.message || (error as any).error_description);
-                return;
-              }
-
-              this.userCodeInfo = undefined;
-              resolve(<TokenResponse>response);
-            });
-        });
-    });
-  }
+    );
+  };
 
   /**
    * Retrieve a new accessToken via the refresh token
-   * 
+   *
    * @param resource
    * @param log
    * @param debug
    */
-  private ensureAccessTokenWithRefreshToken = (resource: string, log: Logger, debug: boolean): Promise<TokenResponse> => {
-    return new Promise<TokenResponse>((resolve: (tokenResponse: TokenResponse) => void, reject: (error: any) => void): void => {
-      if (debug) {
-        log.info(`Retrieving new access token using existing refresh token ${this.service.refreshToken}`);
+  private ensureAccessTokenWithRefreshToken = (
+    resource: string,
+    log: Logger,
+    debug: boolean
+  ): Promise<TokenResponse> => {
+    return new Promise<TokenResponse>(
+      (
+        resolve: (tokenResponse: TokenResponse) => void,
+        reject: (error: any) => void
+      ): void => {
+        if (debug) {
+          log.info(
+            `Retrieving new access token using existing refresh token ${this.service.refreshToken}`
+          );
+        }
+
+        this.authCtx.acquireTokenWithRefreshToken(
+          this.service.refreshToken as string,
+          this.appId as string,
+          resource,
+          (error: Error, response: TokenResponse | ErrorResponse): void => {
+            if (debug) {
+              log.info("Response:");
+              log.info(response);
+              log.info("");
+            }
+
+            if (error || (response as any).error_description) {
+              reject(
+                (response && (response as any).error_description) ||
+                  error.message
+              );
+              return;
+            }
+
+            resolve(<TokenResponse>response);
+          }
+        );
       }
+    );
+  };
 
-      this.authCtx.acquireTokenWithRefreshToken(
-        this.service.refreshToken as string,
-        this.appId as string,
-        resource,
-        (error: Error, response: TokenResponse | ErrorResponse): void => {
-          if (debug) {
-            log.info('Response:');
-            log.info(response);
-            log.info('');
-          }
-
-          if (error || (response as any).error_description) {            
-            reject((response && (response as any).error_description) || error.message);
-            return;
-          }
-
-          resolve(<TokenResponse>response);
-        });
-    });
-  }
-  
   /**
    * Set and get token
    */
-  private setToken = async (resource: string, token: AccessToken): Promise<void> => {
-    await this.storage.set(`${this.appId}-${resource}-token`, JSON.stringify(token));
-  }
+  private setToken = async (
+    resource: string,
+    token: AccessToken
+  ): Promise<void> => {
+    await this.storage.set(
+      `${this.appId}-${resource}-token`,
+      JSON.stringify(token)
+    );
+  };
 
   private getToken = async (resource: string): Promise<AccessToken | null> => {
     const token = await this.storage.get(`${this.appId}-${resource}-token`);
@@ -220,16 +298,19 @@ export class Auth {
     } else {
       return null;
     }
-  }
+  };
 
-  private removeToken = async (resource: string): Promise<void> => {
+  public removeToken = async (resource: string): Promise<void> => {
     await this.storage.del(`${this.appId}-${resource}-token`);
-  }
+  };
 
   /**
    * Store the connection information
    */
   private storeConnectionInfo = async (resource: string): Promise<void> => {
-    await this.storage.set(`${this.appId}-${resource}`, JSON.stringify(this.service));
-  }
+    await this.storage.set(
+      `${this.appId}-${resource}`,
+      JSON.stringify(this.service)
+    );
+  };
 }

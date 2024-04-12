@@ -1,10 +1,19 @@
 /// <reference types="hap-nodejs" />
 
-import { Homebridge, HomebridgeAccessory, PresenceConfig, Logger, Presence, Availability, StatusColors, RGB } from '../models';
-import persist from 'node-persist';
-import { Auth, splitHours } from '../helpers';
-import { MsGraphService, BusyLightService } from '../services';
-import { Activity } from '../models/Activity';
+import {
+  Homebridge,
+  HomebridgeAccessory,
+  PresenceConfig,
+  Logger,
+  Presence,
+  Availability,
+  StatusColors,
+  RGB,
+} from "../models";
+import persist from "node-persist";
+import { Auth, splitHours } from "../helpers";
+import { MsGraphService, BusyLightService } from "../services";
+import { Activity } from "../models/Activity";
 
 const MSGRAPH_URL = `https://graph.microsoft.com`;
 const MSGRAPH_PRESENCE_PATH = `v1.0/me/presence`;
@@ -19,13 +28,15 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private storage: typeof persist;
   private auth: Auth = null;
 
+  private resetSwitch: HAPNodeJS.Service = null;
+
   private switchOff: HAPNodeJS.Service = null;
   private switchAway: HAPNodeJS.Service = null;
   private switchBusy: HAPNodeJS.Service = null;
   private switchAvailable: HAPNodeJS.Service = null;
   private switchDnD: HAPNodeJS.Service = null;
 
-  private activitySwitches: { [name: string]: HAPNodeJS.Service} = {};
+  private activitySwitches: { [name: string]: HAPNodeJS.Service } = {};
 
   private timeoutIdx: NodeJS.Timeout = null;
 
@@ -33,23 +44,23 @@ export class PresenceAccessory implements HomebridgeAccessory {
     available: {
       red: 0,
       green: 144,
-      blue: 0
+      blue: 0,
     },
     away: {
       red: 255,
       green: 191,
-      blue: 0
+      blue: 0,
     },
     busy: {
       red: 179,
       green: 0,
-      blue: 0
+      blue: 0,
     },
     donotdisturb: {
       red: 149,
       green: 0,
-      blue: 0
-    }
+      blue: 0,
+    },
   };
 
   private config: PresenceConfig = {
@@ -66,57 +77,124 @@ export class PresenceAccessory implements HomebridgeAccessory {
     lightType: null,
     statusColors: this.defaultColors,
     weekend: false,
-    debug: false
+    debug: false,
   };
-  
+
   /**
    * Initialize the accessory registration
-   * 
-   * @param homebridge 
-   * @param packageJSON 
-   * @param platformName 
+   *
+   * @param homebridge
+   * @param packageJSON
+   * @param platformName
    */
-  public static register(homebridge: Homebridge, packageJSON: any, platformName: string) {
-    console.log(`The ${packageJSON.name} plugin version is: ${packageJSON.version}. Installed on Homebridge version: ${homebridge.version}.`);
+  public static register(
+    homebridge: Homebridge,
+    packageJSON: any,
+    platformName: string
+  ) {
+    console.log(
+      `The ${packageJSON.name} plugin version is: ${packageJSON.version}. Installed on Homebridge version: ${homebridge.version}.`
+    );
 
     this.api = homebridge;
     this.service = homebridge.hap.Service;
     this.characteristic = homebridge.hap.Characteristic;
     this.version = packageJSON.version;
-    
-    homebridge.registerAccessory(packageJSON.name, platformName, PresenceAccessory);
+
+    homebridge.registerAccessory(
+      packageJSON.name,
+      platformName,
+      PresenceAccessory
+    );
   }
 
-  constructor(private log: Logger, options: PresenceConfig, private api: Homebridge) {
+  constructor(
+    private log: Logger,
+    options: PresenceConfig,
+    private api: Homebridge
+  ) {
     // Overwrite the default config
     this.config = Object.assign({}, this.config, options);
 
     // Register new switch
-    this.accessoryService = new PresenceAccessory.service.Switch(this.config.name, null);
-    this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false).on("set", this.setStatus);
+    this.accessoryService = new PresenceAccessory.service.Switch(
+      this.config.name,
+      ""
+    );
+    this.accessoryService
+      .getCharacteristic(PresenceAccessory.characteristic.On)
+      .updateValue(false)
+      .on("set", this.setStatus);
+
+    // Register reset button
+    this.resetSwitch = new PresenceAccessory.service.Switch(
+      `Reset - ${this.config.name}`,
+      "Reset"
+    );
+    this.resetSwitch
+      .getCharacteristic(PresenceAccessory.characteristic.On)
+      .updateValue(false)
+      .on("set", this.reset);
 
     // Register state switches
-    this.switchOff = new PresenceAccessory.service.Switch(`Switch Offline - ${this.config.name}`, 'Offline');
-    this.switchOff.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
-    
-    this.switchBusy = new PresenceAccessory.service.Switch(`Switch Busy - ${this.config.name}`, 'Busy');
-    this.switchBusy.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+    this.switchOff = new PresenceAccessory.service.Switch(
+      `Switch Offline - ${this.config.name}`,
+      "Offline"
+    );
+    this.switchOff
+      .getCharacteristic(PresenceAccessory.characteristic.On)
+      .updateValue(false);
 
-    this.switchAway = new PresenceAccessory.service.Switch(`Switch Away - ${this.config.name}`, 'Away');
-    this.switchAway.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+    this.switchBusy = new PresenceAccessory.service.Switch(
+      `Switch Busy - ${this.config.name}`,
+      "Busy"
+    );
+    this.switchBusy
+      .getCharacteristic(PresenceAccessory.characteristic.On)
+      .updateValue(false);
 
-    this.switchAvailable = new PresenceAccessory.service.Switch(`Switch Available - ${this.config.name}`, 'Available');
-    this.switchAvailable.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+    this.switchAway = new PresenceAccessory.service.Switch(
+      `Switch Away - ${this.config.name}`,
+      "Away"
+    );
+    this.switchAway
+      .getCharacteristic(PresenceAccessory.characteristic.On)
+      .updateValue(false);
 
-    this.switchDnD = new PresenceAccessory.service.Switch(`Switch DnD - ${this.config.name}`, 'DnD');
-    this.switchDnD.getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+    this.switchAvailable = new PresenceAccessory.service.Switch(
+      `Switch Available - ${this.config.name}`,
+      "Available"
+    );
+    this.switchAvailable
+      .getCharacteristic(PresenceAccessory.characteristic.On)
+      .updateValue(false);
+
+    this.switchDnD = new PresenceAccessory.service.Switch(
+      `Switch DnD - ${this.config.name}`,
+      "DnD"
+    );
+    this.switchDnD
+      .getCharacteristic(PresenceAccessory.characteristic.On)
+      .updateValue(false);
 
     // Register custom switches if needed
-    const otherStates = Object.keys(this.config.statusColors).filter(status => status !== "available" && status !== "away" && status !== "busy" && status !== "donotdisturb");
+    const otherStates = Object.keys(this.config.statusColors).filter(
+      (status) =>
+        status !== "available" &&
+        status !== "away" &&
+        status !== "busy" &&
+        status !== "donotdisturb"
+    );
     if (otherStates && otherStates.length > 0) {
       for (const state of otherStates) {
-        this.activitySwitches[state.toLowerCase()] = new PresenceAccessory.service.Switch(`Switch ${state} - ${this.config.name}`, state);
-        this.activitySwitches[state.toLowerCase()].getCharacteristic(PresenceAccessory.characteristic.On).updateValue(false);
+        this.activitySwitches[state.toLowerCase()] =
+          new PresenceAccessory.service.Switch(
+            `Switch ${state} - ${this.config.name}`,
+            state
+          );
+        this.activitySwitches[state.toLowerCase()]
+          .getCharacteristic(PresenceAccessory.characteristic.On)
+          .updateValue(false);
       }
     }
 
@@ -128,14 +206,30 @@ export class PresenceAccessory implements HomebridgeAccessory {
    * Return the new accessory service
    */
   public getServices() {
-    const informationService = new (PresenceAccessory.service as any).AccessoryInformation();
+    const informationService = new (
+      PresenceAccessory.service as any
+    ).AccessoryInformation();
     const characteristic = PresenceAccessory.characteristic;
-    informationService.setCharacteristic(characteristic.Manufacturer, 'Elio Struyf')
-                      .setCharacteristic(characteristic.Model, 'Presence Indicator')
-                      .setCharacteristic(characteristic.SerialNumber, 'PI_01')
-                      .setCharacteristic(characteristic.FirmwareRevision, PresenceAccessory.version);
+    informationService
+      .setCharacteristic(characteristic.Manufacturer, "Elio Struyf")
+      .setCharacteristic(characteristic.Model, "Presence Indicator")
+      .setCharacteristic(characteristic.SerialNumber, "PI_01")
+      .setCharacteristic(
+        characteristic.FirmwareRevision,
+        PresenceAccessory.version
+      );
     const otherSwitches = Object.keys(this.activitySwitches);
-    return [informationService, this.accessoryService, this.switchOff, this.switchDnD, this.switchBusy, this.switchAway, this.switchAvailable, ...otherSwitches.map(name => this.activitySwitches[name])];
+    return [
+      informationService,
+      this.accessoryService,
+      this.resetSwitch,
+      this.switchOff,
+      this.switchDnD,
+      this.switchBusy,
+      this.switchAway,
+      this.switchAvailable,
+      ...otherSwitches.map((name) => this.activitySwitches[name]),
+    ];
   }
 
   /**
@@ -143,12 +237,43 @@ export class PresenceAccessory implements HomebridgeAccessory {
    */
   private async init() {
     const storePath = PresenceAccessory.api.user.persistPath();
+    if (this.config.debug) {
+      this.log.info(`Storage path: ${storePath}`);
+    }
     this.storage = persist;
     await this.storage.init({
       dir: storePath,
-      forgiveParseErrors: true
+      forgiveParseErrors: true,
     });
   }
+
+  /**
+   * Reset the persistent storage
+   * @param on
+   * @param callback
+   */
+  private reset = async (on: boolean, callback: () => void) => {
+    this.log.info(
+      `Triggered reset of the presence indicator cache. Status: ${on}.`
+    );
+    if (on) {
+      this.auth.removeToken(MSGRAPH_URL);
+
+      this.accessoryService
+        .getCharacteristic(PresenceAccessory.characteristic.On)
+        .updateValue(false);
+
+      this.log.info(`Cleared the presence indicator cache.`);
+
+      setTimeout(() => {
+        this.resetSwitch
+          .getCharacteristic(PresenceAccessory.characteristic.On)
+          .updateValue(false);
+      }, 3000);
+    }
+
+    callback();
+  };
 
   /**
    * Set status event listener
@@ -156,18 +281,28 @@ export class PresenceAccessory implements HomebridgeAccessory {
   private setStatus = (on: boolean, callback: () => void) => {
     if (on) {
       // Turned on
-      this.auth = new Auth(this.config.tenantId, this.config.appId, this.storage);
-      this.auth.ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug).then(async (accessToken) => {
-        if (this.config.onApi) {
-          await BusyLightService.get(this.config.onApi, this.log, this.config.debug);
-        }
+      this.auth = new Auth(
+        this.config.tenantId,
+        this.config.appId,
+        this.storage
+      );
+      this.auth
+        .ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug)
+        .then(async (accessToken) => {
+          if (this.config.onApi) {
+            await BusyLightService.get(
+              this.config.onApi,
+              this.log,
+              this.config.debug
+            );
+          }
 
-        if (accessToken) {
-          this.log.info(`Access token acquired.`);
-          this.presencePolling();
-        }
-      });
-    } else  {
+          if (accessToken) {
+            this.log.info(`Access token acquired.`);
+            this.presencePolling();
+          }
+        });
+    } else {
       // Turned off
       if (this.timeoutIdx) {
         clearTimeout(this.timeoutIdx);
@@ -176,37 +311,57 @@ export class PresenceAccessory implements HomebridgeAccessory {
     }
 
     callback();
-  }
+  };
 
   /**
    * Presence polling
    */
   private presencePolling = async () => {
-    const accessToken = await this.auth.ensureAccessToken(MSGRAPH_URL, this.log, this.config.debug);
+    const accessToken = await this.auth.ensureAccessToken(
+      MSGRAPH_URL,
+      this.log,
+      this.config.debug
+    );
     if (accessToken) {
       const shouldFetch = this.shouldCheckPresence();
 
       if (shouldFetch) {
-        const presence: Presence = await MsGraphService.get(`${MSGRAPH_URL}/${MSGRAPH_PRESENCE_PATH}`, accessToken, this.log, this.config.debug);
+        const presence: Presence = await MsGraphService.get(
+          `${MSGRAPH_URL}/${MSGRAPH_PRESENCE_PATH}`,
+          accessToken,
+          this.log,
+          this.config.debug
+        );
         if (presence && presence.availability) {
           const availability = this.getAvailability(presence.availability);
           const activity = presence.activity;
-          let color: RGB = this.config.statusColors[activity] || this.config.statusColors[availability.toLowerCase()];
+          let color: RGB =
+            this.config.statusColors[activity] ||
+            this.config.statusColors[availability.toLowerCase()];
           if (!color || (!color.red && !color.green && !color.blue)) {
             color = this.defaultColors[availability.toLowerCase()];
           }
 
           this.setSwitchState(availability, activity);
 
-          if (this.config.setColorApi)  {
-            await BusyLightService.post(this.config.setColorApi, color, this.log, this.config.debug);
+          if (this.config.setColorApi) {
+            await BusyLightService.post(
+              this.config.setColorApi,
+              color,
+              this.log,
+              this.config.debug
+            );
           }
         }
       } else {
         this.setSwitchState(Availability.Offline, null);
 
         if (this.config.offApi) {
-          await BusyLightService.get(this.config.offApi, this.log, this.config.debug);
+          await BusyLightService.get(
+            this.config.offApi,
+            this.log,
+            this.config.debug
+          );
         }
       }
     }
@@ -214,19 +369,22 @@ export class PresenceAccessory implements HomebridgeAccessory {
     this.timeoutIdx = setTimeout(() => {
       this.presencePolling();
     }, (this.config.interval > 0 ? this.config.interval : 1) * 60 * 1000);
-  }
+  };
 
   /**
    * Turn the right state on/off of the state switches
-   * @param availability 
+   * @param availability
    */
   private setSwitchState(availability: Availability, activity: Activity) {
     const characteristic = PresenceAccessory.characteristic.On;
 
-    if (activity && typeof this.activitySwitches[activity.toLowerCase()] !== "undefined") {
+    if (
+      activity &&
+      typeof this.activitySwitches[activity.toLowerCase()] !== "undefined"
+    ) {
       for (const switchName of Object.keys(this.activitySwitches)) {
         const activitySwitch = this.activitySwitches[switchName];
-        
+
         if (switchName === activity.toLowerCase()) {
           activitySwitch.getCharacteristic(characteristic).updateValue(true);
         } else {
@@ -242,25 +400,42 @@ export class PresenceAccessory implements HomebridgeAccessory {
 
       return;
     }
-    
-    this.switchAvailable.getCharacteristic(characteristic).updateValue(availability === Availability.Available);
-    this.switchAway.getCharacteristic(characteristic).updateValue(availability === Availability.Away);
-    this.switchBusy.getCharacteristic(characteristic).updateValue(availability === Availability.Busy);
-    this.switchDnD.getCharacteristic(characteristic).updateValue(availability === Availability.DoNotDisturb);
-    this.switchOff.getCharacteristic(characteristic).updateValue(availability !== Availability.DoNotDisturb && availability !== Availability.Busy && availability !== Availability.Away && availability !== Availability.Available);
+
+    this.switchAvailable
+      .getCharacteristic(characteristic)
+      .updateValue(availability === Availability.Available);
+    this.switchAway
+      .getCharacteristic(characteristic)
+      .updateValue(availability === Availability.Away);
+    this.switchBusy
+      .getCharacteristic(characteristic)
+      .updateValue(availability === Availability.Busy);
+    this.switchDnD
+      .getCharacteristic(characteristic)
+      .updateValue(availability === Availability.DoNotDisturb);
+    this.switchOff
+      .getCharacteristic(characteristic)
+      .updateValue(
+        availability !== Availability.DoNotDisturb &&
+          availability !== Availability.Busy &&
+          availability !== Availability.Away &&
+          availability !== Availability.Available
+      );
 
     for (const switchName of Object.keys(this.activitySwitches)) {
-      this.activitySwitches[switchName].getCharacteristic(characteristic).updateValue(false);
+      this.activitySwitches[switchName]
+        .getCharacteristic(characteristic)
+        .updateValue(false);
     }
   }
 
   /**
    * Retrieve the availability status
-   * 
-   * @param presence 
+   *
+   * @param presence
    */
   private getAvailability(presence: Availability) {
-    switch(presence) {
+    switch (presence) {
       case Availability.Available:
       case Availability.AvailableIdle:
         return Availability.Available;
@@ -284,7 +459,11 @@ export class PresenceAccessory implements HomebridgeAccessory {
    */
   private shouldCheckPresence() {
     // Check if switch is on or off
-    const state = (this.accessoryService.getCharacteristic(PresenceAccessory.characteristic.On) as any).value;
+    const state = (
+      this.accessoryService.getCharacteristic(
+        PresenceAccessory.characteristic.On
+      ) as any
+    ).value;
     if (this.config.debug) {
       this.log.info(`Current accessory state is: ${JSON.stringify(state)}`);
     }
@@ -300,23 +479,40 @@ export class PresenceAccessory implements HomebridgeAccessory {
     }
     const crntDate = new Date();
 
-    if(!this.config.weekend && (crntDate.getDay() === 6 || crntDate.getDay() === 0)) {
+    if (
+      !this.config.weekend &&
+      (crntDate.getDay() === 6 || crntDate.getDay() === 0)
+    ) {
       if (this.config.debug) {
         this.log.info(`It's weekend, accessory will not set the busy light.`);
       }
       return false;
     }
 
-    if (startTimeSplit && (crntDate.getHours() < startTimeSplit.hour || crntDate.getHours() === startTimeSplit.hour && crntDate.getMinutes() < startTimeSplit.minutes)) {
+    if (
+      startTimeSplit &&
+      (crntDate.getHours() < startTimeSplit.hour ||
+        (crntDate.getHours() === startTimeSplit.hour &&
+          crntDate.getMinutes() < startTimeSplit.minutes))
+    ) {
       if (this.config.debug) {
-        this.log.info(`Presence doesn't need to be checked, before working hours.`);
+        this.log.info(
+          `Presence doesn't need to be checked, before working hours.`
+        );
       }
       return false;
     }
 
-    if (endTimeSplit && (crntDate.getHours() > endTimeSplit.hour || crntDate.getHours() === endTimeSplit.hour && crntDate.getMinutes() > endTimeSplit.minutes)) {
+    if (
+      endTimeSplit &&
+      (crntDate.getHours() > endTimeSplit.hour ||
+        (crntDate.getHours() === endTimeSplit.hour &&
+          crntDate.getMinutes() > endTimeSplit.minutes))
+    ) {
       if (this.config.debug) {
-        this.log.info(`Presence doesn't need to be checked, after working hours.`);
+        this.log.info(
+          `Presence doesn't need to be checked, after working hours.`
+        );
       }
       return false;
     }
